@@ -28,7 +28,8 @@ await server.start();
 app.use(
   "/graphql",
   cors(),
-  express.json(),
+  express.json({ limit: "30mb", extended: true }),
+  express.urlencoded({ limit: "30mb", extended: true }),
   expressMiddleware(server, {
     context: async ({ req }) => ({ token: req.headers.token }),
   })
