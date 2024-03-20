@@ -1,18 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FileBase64 from "react-file-base64";
 import { TextField, Button, Typography, Paper } from "@mui/material";
 import styles from "./styles.module.css";
-import { CREATE_POST } from "../../mutations/postMutations";
-import { GET_POSTS } from "../../queries/postQueries";
-import { useMutation } from "@apollo/client";
+import { CREATE_POST, UPDATE_POST } from "../../mutations/postMutations";
+import { GET_POSTS, GET_POST } from "../../queries/postQueries";
+import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
+import { currentId } from "../../App";
 
 export default function Form() {
+  const postId = useReactiveVar(currentId);
   const [postData, setPostData] = useState({
     creator: "",
     title: "",
     message: "",
     tags: "",
     selectedFile: "",
+  });
+
+  const { loading, error, data } = useQuery(GET_POST, {
+    variables: { postId: postId },
   });
 
   const [createPost] = useMutation(CREATE_POST, {
@@ -26,6 +32,22 @@ export default function Form() {
     },
   });
 
+  const [updatePost] = useMutation(UPDATE_POST, {
+    variables: {
+      updatePostId: postId,
+      title: postData.title,
+      message: postData.message,
+      creator: postData.creator,
+      tags: postData.tags,
+      selectedFile: postData.selectedFile,
+    },
+    refetchQueries: [{ query: GET_POSTS }],
+  });
+
+  useEffect(() => {
+    if (!loading && !error) setPostData(data.post);
+  }, [postId, loading, error, data]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -37,19 +59,30 @@ export default function Form() {
     ) {
       return alert("Please fill in all fields");
     }
-    console.log(postData);
 
-    createPost(
-      postData.title,
-      postData.message,
-      postData.creator,
-      postData.tags,
-      postData.selectedFile
-    );
+    if (postId) {
+      updatePost(
+        postId,
+        postData.creator,
+        postData.title,
+        postData.message,
+        postData.tags,
+        postData.selectedFile
+      );
+    } else {
+      createPost(
+        postData.creator,
+        postData.title,
+        postData.message,
+        postData.tags,
+        postData.selectedFile
+      );
+    }
 
     clear();
   };
   const clear = () => {
+    currentId(null);
     setPostData({
       creator: "",
       title: "",
@@ -59,15 +92,18 @@ export default function Form() {
     });
   };
   return (
-    <Paper className={styles.paper}>
+    <Paper sx={{ padding: 1 }}>
       <form
         autoComplete="off"
         noValidate
         className={styles.form}
         onSubmit={handleSubmit}
       >
-        <Typography variant="h6"> Creating a memory </Typography>
+        <Typography variant="h6">
+          {postId ? "Editing" : "Creating"} a memory
+        </Typography>
         <TextField
+          sx={{ margin: 1 }}
           name="creator"
           variant="outlined"
           label="Creator"
@@ -79,6 +115,7 @@ export default function Form() {
           }
         />
         <TextField
+          sx={{ margin: 1 }}
           name="title"
           variant="outlined"
           label="Title"
@@ -88,6 +125,7 @@ export default function Form() {
           onChange={(e) => setPostData({ ...postData, title: e.target.value })}
         />
         <TextField
+          sx={{ margin: 1 }}
           name="message"
           variant="outlined"
           label="Message"
@@ -99,6 +137,7 @@ export default function Form() {
           }
         />
         <TextField
+          sx={{ margin: 1 }}
           name="tags"
           variant="outlined"
           label="Tags"
@@ -117,7 +156,7 @@ export default function Form() {
           ></FileBase64>
         </div>
         <Button
-          className={styles.buttonSubmit}
+          sx={{ marginBottom: 1 }}
           variant="contained"
           color="primary"
           size="large"

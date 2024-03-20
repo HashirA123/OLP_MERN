@@ -14,3 +14,18 @@ export const GET_POSTS = gql`
     }
   }
 `;
+
+export const GET_POST = gql`
+  query Post($postId: ID!) {
+    post(id: $postId) {
+      id
+      title
+      message
+      creator
+      tags
+      selectedFile
+      likeCount
+      createdAt
+    }
+  }
+`;

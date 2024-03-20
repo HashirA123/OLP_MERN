@@ -26,3 +26,34 @@ export const CREATE_POST = gql`
     }
   }
 `;
+
+export const UPDATE_POST = gql`
+  mutation updatePost(
+    $updatePostId: ID!
+    $title: String
+    $message: String
+    $creator: String
+    $tags: [String]
+    $likeCount: Int
+    $selectedFile: String
+  ) {
+    updatePost(
+      id: $updatePostId
+      title: $title
+      message: $message
+      creator: $creator
+      tags: $tags
+      likeCount: $likeCount
+      selectedFile: $selectedFile
+    ) {
+      id
+      title
+      message
+      creator
+      tags
+      selectedFile
+      likeCount
+      createdAt
+    }
+  }
+`;

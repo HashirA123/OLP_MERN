@@ -1,9 +1,16 @@
-import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+import {
+  ApolloProvider,
+  ApolloClient,
+  InMemoryCache,
+  makeVar,
+} from "@apollo/client";
 import { Container, AppBar, Typography, Grow, Grid } from "@mui/material";
 import memories from "./images/memories.png";
 import Posts from "./components/Posts/Posts";
 import Form from "./components/Form/Form";
 import styles from "./styles.module.css";
+
+export const currentId = makeVar(null);
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -25,7 +32,6 @@ const client = new ApolloClient({
 });
 
 function App() {
-  // const classes = useStyles();
   return (
     <>
       <ApolloProvider client={client}>

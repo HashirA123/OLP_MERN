@@ -20,7 +20,7 @@ export const typeDefs = gql`
   }
 
   type Query {
-    post(title: String!): Post
+    post(id: ID!): Post
     posts: [Post]
   }
 
@@ -32,7 +32,15 @@ export const typeDefs = gql`
       tags: [String!]
       selectedFile: String
     ): Post
-    # deletePost(id: ID!): Post
+    updatePost(
+      id: ID!
+      title: String
+      message: String
+      creator: String
+      tags: [String]
+      likeCount: Int
+      selectedFile: String
+    ): Post
   }
 `;
 
@@ -64,7 +72,7 @@ export const resolvers = {
   Query: {
     async post(_, args) {
       //return clients.find((client) => client.id === args.id);
-      return await PostMessage.findById(args.title);
+      return await PostMessage.findById(args.id);
     },
     async posts() {
       //return clients;
@@ -83,9 +91,22 @@ export const resolvers = {
 
       return await post.save();
     },
-    // async deleteClient(_, args) {
-    //   return Client.findByIdAndDelete(args.id);
-    // },
+    async updatePost(_, args) {
+      return await PostMessage.findByIdAndUpdate(
+        args.id,
+        {
+          $set: {
+            title: args.title,
+            message: args.message,
+            creator: args.creator,
+            tags: args.tags,
+            likeCount: args.likeCount,
+            selectedFile: args.selectedFile,
+          },
+        },
+        { new: true }
+      );
+    },
   },
 };
 
