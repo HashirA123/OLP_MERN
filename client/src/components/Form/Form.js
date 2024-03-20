@@ -44,6 +44,9 @@ export default function Form() {
     refetchQueries: [{ query: GET_POSTS }],
   });
 
+  // This use effect will run the code inside, fill in the form, whenever the dependencies change,
+  // specifically the postId, which is triggered when the user clicks the 3 dots on the post.
+  // This is kept in track using the state managment system provided by Apollo Client.
   useEffect(() => {
     if (!loading && !error) setPostData(data.post);
   }, [postId, loading, error, data]);

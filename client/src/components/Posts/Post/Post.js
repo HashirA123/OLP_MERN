@@ -15,10 +15,24 @@ import { MdDelete } from "react-icons/md";
 import { FaThumbsUp } from "react-icons/fa";
 import { IoEllipsisHorizontal } from "react-icons/io5";
 import memories from "../../../images/memories.png";
+import { DELETE_POST } from "../../../mutations/postMutations";
+import { GET_POSTS } from "../../../queries/postQueries";
+import { useMutation } from "@apollo/client";
 
 export default function Post({ post }) {
   var image = memories;
   //const postId = useReactiveVar(currentId);
+
+  const [deletePost] = useMutation(DELETE_POST, {
+    variables: {
+      deletePostId: post.id,
+    },
+    refetchQueries: [{ query: GET_POSTS }],
+  });
+
+  const handleDelete = (id) => {
+    deletePost(id);
+  };
 
   if (post.selectedFile !== "") {
     image = post.selectedFile;
@@ -86,7 +100,11 @@ export default function Post({ post }) {
           Like
           {post.likeCount}
         </Button>
-        <Button size="small" color="primary" onClick={() => {}}>
+        <Button
+          size="small"
+          color="primary"
+          onClick={() => handleDelete(post.id)}
+        >
           <MdDelete fontSize="small" />
           Delete
         </Button>

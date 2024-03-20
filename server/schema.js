@@ -41,6 +41,7 @@ export const typeDefs = gql`
       likeCount: Int
       selectedFile: String
     ): Post
+    deletePost(id: ID!): Post
   }
 `;
 
@@ -106,6 +107,9 @@ export const resolvers = {
         },
         { new: true }
       );
+    },
+    async deletePost(_, args) {
+      return await PostMessage.findByIdAndDelete(args.id);
     },
   },
 };
