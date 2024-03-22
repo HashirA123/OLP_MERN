@@ -4,7 +4,8 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import express from "express";
 import http from "http";
 import cors from "cors";
-import { typeDefs, resolvers } from "./schema.js";
+import { typeDefs } from "./schema/typeDefs.js";
+import { resolvers } from "./schema/resolvers.js";
 import dotenv from "dotenv";
 import connectDb from "./config/db.js";
 dotenv.config();

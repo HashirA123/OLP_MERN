@@ -41,7 +41,17 @@ export default function Form() {
       tags: postData.tags,
       selectedFile: postData.selectedFile,
     },
-    refetchQueries: [{ query: GET_POSTS }],
+    update(cache, { data: { updatePost } }) {
+      const { posts } = cache.readQuery({ query: GET_POSTS });
+      cache.writeQuery({
+        query: GET_POSTS,
+        data: {
+          posts: posts.map((post) =>
+            post.id === updatePost.id ? updatePost : post
+          ),
+        },
+      });
+    },
   });
 
   // This use effect will run the code inside, fill in the form, whenever the dependencies change,
@@ -147,7 +157,9 @@ export default function Form() {
           fullWidth
           value={postData.tags}
           // the reason for the ...PostData is so the other data presists in the object and is not overwritten.
-          onChange={(e) => setPostData({ ...postData, tags: e.target.value })}
+          onChange={(e) =>
+            setPostData({ ...postData, tags: e.target.value.split(",") })
+          }
         />
         <div className={styles.fileInput}>
           <FileBase64

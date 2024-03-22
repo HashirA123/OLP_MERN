@@ -34,7 +34,6 @@ export const UPDATE_POST = gql`
     $message: String
     $creator: String
     $tags: [String]
-    $likeCount: Int
     $selectedFile: String
   ) {
     updatePost(
@@ -43,7 +42,6 @@ export const UPDATE_POST = gql`
       message: $message
       creator: $creator
       tags: $tags
-      likeCount: $likeCount
       selectedFile: $selectedFile
     ) {
       id
@@ -61,6 +59,21 @@ export const UPDATE_POST = gql`
 export const DELETE_POST = gql`
   mutation deletePost($deletePostId: ID!) {
     deletePost(id: $deletePostId) {
+      id
+      title
+      message
+      creator
+      tags
+      selectedFile
+      likeCount
+      createdAt
+    }
+  }
+`;
+
+export const LIKE_POST = gql`
+  mutation likePost($likePostId: ID!) {
+    likePost(id: $likePostId) {
       id
       title
       message

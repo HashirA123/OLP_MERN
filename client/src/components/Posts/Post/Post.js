@@ -15,7 +15,7 @@ import { MdDelete } from "react-icons/md";
 import { FaThumbsUp } from "react-icons/fa";
 import { IoEllipsisHorizontal } from "react-icons/io5";
 import memories from "../../../images/memories.png";
-import { DELETE_POST } from "../../../mutations/postMutations";
+import { DELETE_POST, LIKE_POST } from "../../../mutations/postMutations";
 import { GET_POSTS } from "../../../queries/postQueries";
 import { useMutation } from "@apollo/client";
 
@@ -27,11 +27,36 @@ export default function Post({ post }) {
     variables: {
       deletePostId: post.id,
     },
-    refetchQueries: [{ query: GET_POSTS }],
+    update(cache, { data: { deletePost } }) {
+      const { posts } = cache.readQuery({ query: GET_POSTS });
+      cache.writeQuery({
+        query: GET_POSTS,
+        data: { posts: posts.filter((post) => post.id !== deletePost.id) },
+      });
+    },
+  });
+  const [likePost] = useMutation(LIKE_POST, {
+    variables: {
+      likePostId: post.id,
+    },
+    update(cache, { data: { likePost } }) {
+      const { posts } = cache.readQuery({ query: GET_POSTS });
+      cache.writeQuery({
+        query: GET_POSTS,
+        data: {
+          posts: posts.map((post) =>
+            post.id === likePost.id ? likePost : post
+          ),
+        },
+      });
+    },
   });
 
   const handleDelete = (id) => {
     deletePost(id);
+  };
+  const handleLike = (id) => {
+    likePost(id);
   };
 
   if (post.selectedFile !== "") {
@@ -84,7 +109,7 @@ export default function Post({ post }) {
         {post.title}
       </Typography>
       <CardContent>
-        <Typography variant="h7" gutterBottom>
+        <Typography variant="body2" color="textSecondary" component="p">
           {post.message}
         </Typography>
       </CardContent>
@@ -95,9 +120,14 @@ export default function Post({ post }) {
           justifyContent: "space-between",
         }}
       >
-        <Button size="small" color="primary" onClick={() => {}}>
+        <Button
+          size="small"
+          color="primary"
+          onClick={() => handleLike(post.id)}
+        >
           <FaThumbsUp fontSize="small" />
-          Like
+          {/* &nbsp; is a space */}
+          Like &nbsp;
           {post.likeCount}
         </Button>
         <Button

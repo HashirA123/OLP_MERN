@@ -1,49 +1,5 @@
-import gql from "graphql-tag";
-
 // Mongoose Models
-// import Project from "./models/Project.js";
-// import Client from "./models/Client.js";
-import PostMessage from "./models/PostMessage.js";
-
-export const typeDefs = gql`
-  scalar Date
-
-  type Post {
-    id: ID
-    title: String
-    message: String
-    creator: String
-    tags: [String]
-    selectedFile: String
-    likeCount: Int
-    createdAt: Date
-  }
-
-  type Query {
-    post(id: ID!): Post
-    posts: [Post]
-  }
-
-  type Mutation {
-    createPost(
-      title: String!
-      message: String!
-      creator: String!
-      tags: [String!]
-      selectedFile: String
-    ): Post
-    updatePost(
-      id: ID!
-      title: String
-      message: String
-      creator: String
-      tags: [String]
-      likeCount: Int
-      selectedFile: String
-    ): Post
-    deletePost(id: ID!): Post
-  }
-`;
+import PostMessage from "../models/PostMessage.js";
 
 export const resolvers = {
   Date: {
@@ -101,7 +57,6 @@ export const resolvers = {
             message: args.message,
             creator: args.creator,
             tags: args.tags,
-            likeCount: args.likeCount,
             selectedFile: args.selectedFile,
           },
         },
@@ -111,55 +66,20 @@ export const resolvers = {
     async deletePost(_, args) {
       return await PostMessage.findByIdAndDelete(args.id);
     },
+    async likePost(_, args) {
+      const post = await PostMessage.findById(args.id);
+      return await PostMessage.findByIdAndUpdate(
+        args.id,
+        {
+          $set: {
+            likeCount: post.likeCount + 1,
+          },
+        },
+        { new: true }
+      );
+    },
   },
 };
-
-// export const typeDefs = gql`
-//   enum ProjectStatus {
-//     Not_Started
-//     In_Progress
-//     Completed
-//   }
-//   type Client {
-//     id: ID
-//     name: String
-//     email: String
-//     phone: String
-//   }
-
-//   type Project {
-//     id: ID
-//     name: String
-//     description: String
-//     status: ProjectStatus
-//     client: Client
-//   }
-
-//   type Query {
-//     client(id: ID!): Client
-//     clients: [Client]
-//     project(id: ID!): Project
-//     projects: [Project]
-//   }
-
-//   type Mutation {
-//     addClient(name: String!, email: String!, phone: String!): Client
-//     deleteClient(id: ID!): Client
-//     addProject(
-//       name: String!
-//       description: String!
-//       status: ProjectStatus = Not_Started
-//       clientId: ID!
-//     ): Project
-//     deleteProject(id: ID!): Project
-//     updateProject(
-//       id: ID!
-//       name: String
-//       description: String
-//       status: ProjectStatus
-//     ): Project
-//   }
-// `;
 
 // export const resolvers = {
 //   Query: {
