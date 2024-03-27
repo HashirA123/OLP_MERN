@@ -1,5 +1,6 @@
 // Mongoose Models
 import PostMessage from "../models/PostMessage.js";
+import User from "../models/User.js";
 
 export const resolvers = {
   Date: {
@@ -34,6 +35,9 @@ export const resolvers = {
     async posts() {
       //return clients;
       return await PostMessage.find();
+    },
+    async user(_, args) {
+      return await User.findOne({ email: args.email });
     },
   },
   Mutation: {
@@ -77,6 +81,22 @@ export const resolvers = {
         },
         { new: true }
       );
+    },
+    async signUpGoogle(_, args) {
+      const userExist = await User.findOne({
+        email: args.email.toLowerCase(),
+      });
+
+      if (!userExist) {
+        const newUser = new User({
+          name: args.name,
+          email: args.email.toLowerCase(),
+          pfp: args.pfp,
+        });
+        return await newUser.save();
+      } else {
+        return userExist;
+      }
     },
   },
 };

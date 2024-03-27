@@ -4,11 +4,13 @@ import {
   InMemoryCache,
   makeVar,
 } from "@apollo/client";
-import { Container, AppBar, Typography, Grow, Grid } from "@mui/material";
-import memories from "./images/memories.png";
-import Posts from "./components/Posts/Posts";
-import Form from "./components/Form/Form";
-import styles from "./styles.module.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Container, ThemeProvider } from "@mui/material";
+import Navbar from "./components/Navbar/Navbar";
+import Home from "./components/Home/Home";
+import Auth from "./components/Auth/Auth";
+import { customTheme } from "./styles";
+import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist";
 
 export const currentId = makeVar(null);
 
@@ -26,47 +28,31 @@ const cache = new InMemoryCache({
   },
 });
 
-const client = new ApolloClient({
+await persistCache({
+  cache,
+  storage: new LocalStorageWrapper(window.localStorage),
+});
+
+export const client = new ApolloClient({
   uri: "http://localhost:4000/graphql",
   cache: cache,
 });
 
 function App() {
   return (
-    <>
+    <BrowserRouter>
       <ApolloProvider client={client}>
-        <Container maxWidth="lg">
-          <AppBar className={styles.appBar} position="static" color="inherit">
-            <Typography className={styles.heading} variant="h2" align="center">
-              Memories
-            </Typography>
-            <img
-              className={styles.image}
-              src={memories}
-              alt="memories"
-              height="60"
-            />
-          </AppBar>
-          <Grow in>
-            <Container>
-              <Grid
-                container
-                justifyContent="space-between"
-                alignItems="stretch"
-                spacing={3}
-              >
-                <Grid item xs={12} sm={7}>
-                  <Posts />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Form />
-                </Grid>
-              </Grid>
-            </Container>
-          </Grow>
-        </Container>
+        <ThemeProvider theme={customTheme}>
+          <Container maxWidth="lg">
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/auth" element={<Auth />} />
+            </Routes>
+          </Container>
+        </ThemeProvider>
       </ApolloProvider>
-    </>
+    </BrowserRouter>
   );
 }
 
