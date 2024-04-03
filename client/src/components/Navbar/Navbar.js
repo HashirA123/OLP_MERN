@@ -1,15 +1,36 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AppBar, Typography, Avatar, Toolbar, Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styles from "./styles.module.css";
 import memories from "../../images/memories.png";
 import { client } from "../../App.js";
 import { PROFILE } from "../../queries/authQueries.js";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../Auth/authContext.js";
 
 export default function Navbar() {
-  const [user, setUser] = useState(client.readQuery({ query: PROFILE }));
+  //const [user, setUser] = useState(useContext(AuthContext));
+  const { user, logout } = useContext(AuthContext);
+  // const {data, client} = useQuery(PROFILE);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  console.log(user);
+  // console.log(user);
+
+  // useEffect(() => {
+  //   // const exists = user?.profile;
+
+  //   setUser(useContext(AuthContext));
+  // }, [location]);
+
+  const onlogout = async () => {
+    logout();
+
+    navigate("/");
+
+    // setUser(null);
+  };
+
   return (
     <AppBar
       sx={{
@@ -43,20 +64,17 @@ export default function Navbar() {
       <Toolbar className={styles.toolbar}>
         {user ? (
           <div className={styles.profile}>
-            <Avatar
-              className={styles.purple}
-              alt={user.profile.name}
-              src={user.profile.pfp}
-            >
-              {user.profile.name.charAt(0)}
+            <Avatar className={styles.purple} alt={user.name} src={user.pfp}>
+              {user.name.charAt(0)}
             </Avatar>
             <Typography className={styles.userName} variant="h6">
-              {user.profile.name}
+              {user.name}
             </Typography>
             <Button
               variant="contained"
               className={styles.logout}
               color="secondary"
+              onClick={onlogout}
             >
               Logout
             </Button>

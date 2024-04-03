@@ -3,12 +3,17 @@ import gql from "graphql-tag";
 export const typeDefs = gql`
   scalar Date
 
+  type UserTokens {
+    user: User
+    token: String
+  }
+
   type User {
     id: ID!
     name: String!
     email: String!
     password: String!
-    pfp: String!
+    pfp: String
   }
 
   type Post {
@@ -46,6 +51,14 @@ export const typeDefs = gql`
     ): Post
     deletePost(id: ID!): Post
     likePost(id: ID!): Post
-    signUpGoogle(email: String!, name: String!, pfp: String): User
+    signUpGoogle(email: String!, name: String!, pfp: String): UserTokens
+    signUp(
+      email: String!
+      firstName: String!
+      lastName: String!
+      password: String!
+      confirmPassword: String
+    ): UserTokens
+    signIn(email: String!, password: String!): UserTokens
   }
 `;

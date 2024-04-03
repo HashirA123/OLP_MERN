@@ -1,23 +1,103 @@
-import React, { useState } from "react";
-import { Grid, Typography, Container, Button } from "@mui/material";
+import React, { useContext, useState } from "react";
+import { Grid, Typography, Container, Button, Alert } from "@mui/material";
 import { FaUserLock } from "react-icons/fa";
 import Input from "./Input.js";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
-import { SIGN_UP_GOOGLE } from "../../mutations/authMutations.js";
+import {
+  SIGN_IN,
+  SIGN_UP,
+  SIGN_UP_GOOGLE,
+} from "../../mutations/authMutations.js";
 import { useMutation } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
 
 import { AuthAvatar, AuthForm, AuthPaper, AuthSubmit } from "./styles.js";
 import { PROFILE } from "../../queries/authQueries.js";
+import { AuthContext } from "./authContext.js";
+
+const initialState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
 
 export default function Auth() {
   const [isSignup, setIsSignup] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState();
+  const [formData, setFormData] = useState(initialState);
+  const navigate = useNavigate();
+  const context = useContext(AuthContext);
+  const [signUpGoogle] = useMutation(SIGN_UP_GOOGLE);
+  const [signIn] = useMutation(SIGN_IN);
+  const [signUp] = useMutation(SIGN_UP);
 
-  const [signUpGoogle, { loading, error, data }] = useMutation(SIGN_UP_GOOGLE);
-  const handleSubmit = () => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  const handleChange = () => {};
+    if (isSignup) {
+      signUp({
+        variables: {
+          firstName: formData["firstName"],
+          lastName: formData["lastName"],
+          email: formData["email"],
+          password: formData["password"],
+          confirmPassword: formData["confirmPassword"],
+        },
+        update(proxy, { data: { signUp } }) {
+          context.login(signUp);
+          navigate("/");
+        },
+        onError({ graphQLErrors }) {
+          setErrors(graphQLErrors);
+        },
+      });
+    } else {
+      signIn({
+        variables: {
+          email: formData["email"],
+          password: formData["password"],
+        },
+        update(proxy, { data: { signIn } }) {
+          context.login(signIn);
+          navigate("/");
+        },
+        onError({ graphQLErrors }) {
+          setErrors(graphQLErrors);
+        },
+      });
+    }
+  };
+
+  const googleSuccess = async (credentialResponse) => {
+    var decoded = jwtDecode(credentialResponse?.credential);
+    // console.log(decoded);
+    signUpGoogle({
+      variables: {
+        name: decoded["name"],
+        email: decoded["email"],
+        pfp: decoded["picture"],
+      },
+      update(proxy, { data: { signUpGoogle } }) {
+        context.login(signUpGoogle);
+        navigate("/");
+      },
+      onError({ graphQLErrors }) {
+        setErrors(graphQLErrors);
+      },
+    });
+  };
+
+  const googleFailure = () => {
+    console.log("Google auth failed");
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleShowPassword = () => {
     setShowPassword((prev) => !prev);
@@ -26,44 +106,6 @@ export default function Auth() {
   const switchMode = () => {
     setIsSignup((prev) => !prev);
     setShowPassword(false);
-  };
-
-  const googleSuccess = async (credentialResponse) => {
-    var decoded = jwtDecode(credentialResponse?.credential);
-
-    // console.log(decoded);
-
-    await signUpGoogle({
-      variables: {
-        name: decoded["name"],
-        email: decoded["email"],
-        pfp: decoded["picture"],
-      },
-      update(cache, { data: { signUpGoogle } }) {
-        cache.writeQuery({
-          query: PROFILE,
-          data: {
-            profile: {
-              name: signUpGoogle.name,
-              email: signUpGoogle.email,
-              pfp: signUpGoogle.pfp,
-            },
-          },
-        });
-      },
-    });
-    // console.log(data);
-
-    // setUserProfile({
-    //   name: data?.signUpGoogle?.name,
-    //   email: data?.signUpGoogle?.email,
-    // });
-
-    // console.log(userProfile);
-  };
-
-  const googleFailure = () => {
-    console.log("Google auth failed");
   };
 
   return (
@@ -115,6 +157,8 @@ export default function Auth() {
               />
             )}
           </Grid>
+
+          {errors && <Alert severity="error">{errors[0]?.message}</Alert>}
 
           <AuthSubmit
             type="submit"

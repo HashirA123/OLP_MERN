@@ -1,3 +1,6 @@
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { GraphQLError } from "graphql";
 // Mongoose Models
 import PostMessage from "../models/PostMessage.js";
 import User from "../models/User.js";
@@ -70,17 +73,26 @@ export const resolvers = {
     async deletePost(_, args) {
       return await PostMessage.findByIdAndDelete(args.id);
     },
-    async likePost(_, args) {
+    async likePost(_, args, contextValue) {
+      if (!contextValue.userId) {
+        return {
+          message: "Unauthenticated",
+        };
+      }
       const post = await PostMessage.findById(args.id);
-      return await PostMessage.findByIdAndUpdate(
-        args.id,
-        {
-          $set: {
-            likeCount: post.likeCount + 1,
-          },
-        },
-        { new: true }
+
+      const index = post.likes.findIndex(
+        (id) => id === String(contextValue.userId)
       );
+
+      if (index === -1) {
+        post.likes.push(contextValue.userId);
+      } else {
+        post.likes = post.likes.filter(
+          (id) => id !== String(contextValue.userId)
+        );
+      }
+      return await PostMessage.findByIdAndUpdate(args.id, post, { new: true });
     },
     async signUpGoogle(_, args) {
       const userExist = await User.findOne({
@@ -88,15 +100,123 @@ export const resolvers = {
       });
 
       if (!userExist) {
-        const newUser = new User({
+        const newUser = await User.create({
           name: args.name,
           email: args.email.toLowerCase(),
           pfp: args.pfp,
         });
-        return await newUser.save();
+
+        const token = jwt.sign(
+          {
+            email: newUser.email,
+            id: newUser._id,
+            name: newUser.name,
+            pfp: newUser.pfp,
+          },
+          "test",
+          {
+            expiresIn: "1h",
+          }
+        );
+        return { user: newUser, token: token };
+      } else if (userExist.hasOwnProperty("password")) {
+        throw new GraphQLError(
+          "User already exists, Please use your Login Credentials",
+          {
+            extensions: { code: "USER_ALREADY_EXISTS" },
+          }
+        );
       } else {
-        return userExist;
+        const token = jwt.sign(
+          {
+            email: userExist.email,
+            id: userExist._id,
+            name: userExist.name,
+            pfp: userExist.pfp,
+          },
+          "test",
+          {
+            expiresIn: "1h",
+          }
+        );
+
+        return { user: userExist, token: token };
       }
+    },
+    async signUp(_, args) {
+      const userExist = await User.findOne({
+        email: args.email.toLowerCase(),
+      });
+
+      if (userExist) {
+        throw new GraphQLError("User already exists", {
+          extensions: { code: "USER_ALREADY_EXISTS" },
+        });
+      }
+
+      if (args.password !== args.confirmPassword) {
+        throw new GraphQLError("Passwords do not match", {
+          extensions: { code: "PASSWORDS_DO_NOT_MATCH" },
+        });
+      }
+
+      const hashPassword = await bcrypt.hash(args.password, 12);
+
+      const result = await User.create({
+        name: `${args.firstName} ${args.lastName}`,
+        email: args.email.toLowerCase(),
+        password: hashPassword,
+      });
+
+      const token = jwt.sign(
+        {
+          email: result.email,
+          id: result._id,
+          name: result.name,
+          pfp: result.pfp,
+        },
+        "test",
+        {
+          expiresIn: "1h",
+        }
+      );
+
+      return { user: result, token: token };
+    },
+    async signIn(_, args) {
+      const userExist = await User.findOne({
+        email: args.email.toLowerCase(),
+      });
+
+      if (!userExist) {
+        throw new GraphQLError("User does not exist", {
+          extensions: { code: "USER_DOES_NOT_EXIST" },
+        });
+      }
+
+      const isPasswordCorrect = await bcrypt.compare(
+        args.password,
+        userExist.password
+      );
+
+      if (!isPasswordCorrect) {
+        throw new GraphQLError("Invalid Credentials", {
+          extensions: { code: "INVALID_CREDENTIALS" },
+        });
+      }
+
+      const token = jwt.sign(
+        {
+          email: userExist.email,
+          id: userExist._id,
+          name: userExist.name,
+          pfp: userExist.pfp,
+        },
+        "test",
+        { expiresIn: "1h" }
+      );
+
+      return { user: userExist, token: token };
     },
   },
 };

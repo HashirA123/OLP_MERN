@@ -4,7 +4,7 @@ import { TextField, Button, Typography, Paper } from "@mui/material";
 import styles from "./styles.module.css";
 import { CREATE_POST, UPDATE_POST } from "../../mutations/postMutations";
 import { GET_POSTS, GET_POST } from "../../queries/postQueries";
-import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
+import { useMutation, useLazyQuery, useReactiveVar } from "@apollo/client";
 import { currentId } from "../../App";
 
 export default function Form() {
@@ -17,49 +17,25 @@ export default function Form() {
     selectedFile: "",
   });
 
-  const { loading, error, data } = useQuery(GET_POST, {
-    variables: { postId: postId },
-  });
+  const [getPost, { called, loading, error, data }] = useLazyQuery(GET_POST);
 
-  const [createPost] = useMutation(CREATE_POST, {
-    variables: postData,
-    update(cache, { data: { createPost } }) {
-      const { posts } = cache.readQuery({ query: GET_POSTS });
-      cache.writeQuery({
-        query: GET_POSTS,
-        data: { posts: posts.concat([createPost]) },
-      });
-    },
-  });
+  const [createPost] = useMutation(CREATE_POST);
 
-  const [updatePost] = useMutation(UPDATE_POST, {
-    variables: {
-      updatePostId: postId,
-      title: postData.title,
-      message: postData.message,
-      creator: postData.creator,
-      tags: postData.tags,
-      selectedFile: postData.selectedFile,
-    },
-    update(cache, { data: { updatePost } }) {
-      const { posts } = cache.readQuery({ query: GET_POSTS });
-      cache.writeQuery({
-        query: GET_POSTS,
-        data: {
-          posts: posts.map((post) =>
-            post.id === updatePost.id ? updatePost : post
-          ),
-        },
-      });
-    },
-  });
+  const [updatePost] = useMutation(UPDATE_POST);
 
   // This use effect will run the code inside, fill in the form, whenever the dependencies change,
   // specifically the postId, which is triggered when the user clicks the 3 dots on the post.
   // This is kept in track using the state managment system provided by Apollo Client.
   useEffect(() => {
-    if (!loading && !error) setPostData(data.post);
-  }, [postId, loading, error, data]);
+    if (postId !== null) {
+      getPost({
+        variables: { postId: postId },
+      });
+      if (!loading && !error && called) {
+        setPostData(data.post);
+      }
+    }
+  }, [postId, loading, error, called, data]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -74,22 +50,38 @@ export default function Form() {
     }
 
     if (postId) {
-      updatePost(
-        postId,
-        postData.creator,
-        postData.title,
-        postData.message,
-        postData.tags,
-        postData.selectedFile
-      );
+      updatePost({
+        variables: {
+          updatePostId: postId,
+          title: postData.title,
+          message: postData.message,
+          creator: postData.creator,
+          tags: postData.tags,
+          selectedFile: postData.selectedFile,
+        },
+        update(cache, { data: { updatePost } }) {
+          const { posts } = cache.readQuery({ query: GET_POSTS });
+          cache.writeQuery({
+            query: GET_POSTS,
+            data: {
+              posts: posts.map((post) =>
+                post.id === updatePost.id ? updatePost : post
+              ),
+            },
+          });
+        },
+      });
     } else {
-      createPost(
-        postData.creator,
-        postData.title,
-        postData.message,
-        postData.tags,
-        postData.selectedFile
-      );
+      createPost({
+        variables: postData,
+        update(cache, { data: { createPost } }) {
+          const { posts } = cache.readQuery({ query: GET_POSTS });
+          cache.writeQuery({
+            query: GET_POSTS,
+            data: { posts: posts.concat([createPost]) },
+          });
+        },
+      });
     }
 
     clear();

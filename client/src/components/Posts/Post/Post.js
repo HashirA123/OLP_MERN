@@ -23,40 +23,40 @@ export default function Post({ post }) {
   var image = memories;
   //const postId = useReactiveVar(currentId);
 
-  const [deletePost] = useMutation(DELETE_POST, {
-    variables: {
-      deletePostId: post.id,
-    },
-    update(cache, { data: { deletePost } }) {
-      const { posts } = cache.readQuery({ query: GET_POSTS });
-      cache.writeQuery({
-        query: GET_POSTS,
-        data: { posts: posts.filter((post) => post.id !== deletePost.id) },
-      });
-    },
-  });
-  const [likePost] = useMutation(LIKE_POST, {
-    variables: {
-      likePostId: post.id,
-    },
-    update(cache, { data: { likePost } }) {
-      const { posts } = cache.readQuery({ query: GET_POSTS });
-      cache.writeQuery({
-        query: GET_POSTS,
-        data: {
-          posts: posts.map((post) =>
-            post.id === likePost.id ? likePost : post
-          ),
-        },
-      });
-    },
-  });
+  const [deletePost] = useMutation(DELETE_POST);
+  const [likePost] = useMutation(LIKE_POST);
 
   const handleDelete = (id) => {
-    deletePost(id);
+    deletePost({
+      variables: {
+        deletePostId: id,
+      },
+      update(cache, { data: { deletePost } }) {
+        const { posts } = cache.readQuery({ query: GET_POSTS });
+        cache.writeQuery({
+          query: GET_POSTS,
+          data: { posts: posts.filter((post) => post.id !== deletePost.id) },
+        });
+      },
+    });
   };
   const handleLike = (id) => {
-    likePost(id);
+    likePost({
+      variables: {
+        likePostId: id,
+      },
+      update(cache, { data: { likePost } }) {
+        const { posts } = cache.readQuery({ query: GET_POSTS });
+        cache.writeQuery({
+          query: GET_POSTS,
+          data: {
+            posts: posts.map((post) =>
+              post.id === likePost.id ? likePost : post
+            ),
+          },
+        });
+      },
+    });
   };
 
   if (post.selectedFile !== "") {
