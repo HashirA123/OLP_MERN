@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { GraphQLError } from "graphql";
+import auth from "../middleware/auth.js";
 // Mongoose Models
 import PostMessage from "../models/PostMessage.js";
 import User from "../models/User.js";
@@ -44,13 +45,22 @@ export const resolvers = {
     },
   },
   Mutation: {
-    async createPost(_, args) {
+    async createPost(_, args, contextValue) {
+      if (!contextValue.token || contextValue.token === "null") {
+        throw new GraphQLError("Please login in order to create your post", {
+          extensions: { code: "USER_NOT_LOGGED_IN" },
+        });
+      }
+      const userId = auth(contextValue?.token);
+
       const post = new PostMessage({
         title: args.title,
         message: args.message,
-        creator: args.creator,
+        name: args.name,
+        creator: userId,
         tags: args.tags,
         selectedFile: args.selectedFile,
+        createdAt: new Date().toISOString(),
       });
 
       return await post.save();
@@ -62,7 +72,7 @@ export const resolvers = {
           $set: {
             title: args.title,
             message: args.message,
-            creator: args.creator,
+            name: args.name,
             tags: args.tags,
             selectedFile: args.selectedFile,
           },
@@ -70,27 +80,29 @@ export const resolvers = {
         { new: true }
       );
     },
-    async deletePost(_, args) {
+    async deletePost(_, args, contextValue) {
+      if (!contextValue.token || contextValue.token === "null") {
+        throw new GraphQLError("Please login in order to delete your post", {
+          extensions: { code: "USER_NOT_LOGGED_IN" },
+        });
+      }
       return await PostMessage.findByIdAndDelete(args.id);
     },
     async likePost(_, args, contextValue) {
-      if (!contextValue.userId) {
-        return {
-          message: "Unauthenticated",
-        };
+      if (!contextValue.token || contextValue.token === "null") {
+        throw new GraphQLError("Please login in order to like a post", {
+          extensions: { code: "USER_NOT_LOGGED_IN" },
+        });
       }
+      const userId = auth(contextValue?.token);
       const post = await PostMessage.findById(args.id);
 
-      const index = post.likes.findIndex(
-        (id) => id === String(contextValue.userId)
-      );
+      const index = post.likes.findIndex((id) => id === String(userId));
 
       if (index === -1) {
-        post.likes.push(contextValue.userId);
+        post.likes.push(userId);
       } else {
-        post.likes = post.likes.filter(
-          (id) => id !== String(contextValue.userId)
-        );
+        post.likes = post.likes.filter((id) => id !== String(userId));
       }
       return await PostMessage.findByIdAndUpdate(args.id, post, { new: true });
     },
@@ -220,74 +232,3 @@ export const resolvers = {
     },
   },
 };
-
-// export const resolvers = {
-//   Query: {
-//     async client(_, args) {
-//       //return clients.find((client) => client.id === args.id);
-//       return await Client.findById(args.id);
-//     },
-//     async clients() {
-//       //return clients;
-//       return await Client.find();
-//     },
-//     async project(_, args) {
-//       // return projects.find((project) => project.id === args.id);
-//       return await Project.findById(args.id);
-//     },
-//     async projects() {
-//       //return projects;
-//       return await Project.find();
-//     },
-//   },
-//   ProjectStatus: {
-//     Not_Started: "Not Started",
-//     In_Progress: "In Progress",
-//     Completed: "Completed",
-//   },
-//   Project: {
-//     async client(parent, _) {
-//       return await Client.findById(parent.clientId);
-//     },
-//   },
-//   Mutation: {
-//     async addClient(_, args) {
-//       const client = new Client({
-//         name: args.name,
-//         email: args.email,
-//         phone: args.phone,
-//       });
-
-//       return await client.save();
-//     },
-//     async deleteClient(_, args) {
-//       return Client.findByIdAndDelete(args.id);
-//     },
-//     async addProject(_, args) {
-//       const project = new Project({
-//         name: args.name,
-//         description: args.description,
-//         clientId: args.clientId,
-//         status: args.status,
-//       });
-
-//       return project.save();
-//     },
-//     async deleteProject(_, args) {
-//       return Project.findByIdAndDelete(args.id);
-//     },
-//     async updateProject(_, args) {
-//       return Project.findByIdAndUpdate(
-//         args.id,
-//         {
-//           $set: {
-//             name: args.name,
-//             description: args.description,
-//             status: args.status,
-//           },
-//         },
-//         { new: true }
-//       );
-//     },
-//   },
-// };

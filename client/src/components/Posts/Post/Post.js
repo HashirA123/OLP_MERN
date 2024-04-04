@@ -1,5 +1,4 @@
-import React from "react";
-// import { useReactiveVar } from "@apollo/client";
+import React, { useContext } from "react";
 import { currentId } from "../../../App";
 import styles from "./styles.module.css";
 import {
@@ -18,6 +17,7 @@ import memories from "../../../images/memories.png";
 import { DELETE_POST, LIKE_POST } from "../../../mutations/postMutations";
 import { GET_POSTS } from "../../../queries/postQueries";
 import { useMutation } from "@apollo/client";
+import { AuthContext } from "../../Auth/authContext";
 
 export default function Post({ post }) {
   var image = memories;
@@ -25,6 +25,7 @@ export default function Post({ post }) {
 
   const [deletePost] = useMutation(DELETE_POST);
   const [likePost] = useMutation(LIKE_POST);
+  const { user } = useContext(AuthContext);
 
   const handleDelete = (id) => {
     deletePost({
@@ -84,7 +85,7 @@ export default function Post({ post }) {
         title={post.title}
       ></CardMedia>
       <div className={styles.overlay}>
-        <Typography variant="h6">{post.creator}</Typography>
+        <Typography variant="h6">{post.name}</Typography>
         <Typography variant="body2">
           {moment(post.createdAt).fromNow()}
         </Typography>
@@ -130,14 +131,16 @@ export default function Post({ post }) {
           Like &nbsp;
           {post.likeCount}
         </Button>
-        <Button
-          size="small"
-          color="primary"
-          onClick={() => handleDelete(post.id)}
-        >
-          <MdDelete fontSize="small" />
-          Delete
-        </Button>
+        {user?.id === post.creator && (
+          <Button
+            size="small"
+            color="primary"
+            onClick={() => handleDelete(post.id)}
+          >
+            <MdDelete fontSize="small" />
+            Delete
+          </Button>
+        )}
       </CardActions>
     </Card>
   );

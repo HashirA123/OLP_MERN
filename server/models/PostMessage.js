@@ -7,6 +7,9 @@ const postSchema = new mongoose.Schema({
   message: {
     type: String,
   },
+  name: {
+    type: String,
+  },
   creator: {
     type: String,
   },

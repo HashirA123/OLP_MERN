@@ -6,6 +6,7 @@ export const GET_POSTS = gql`
       id
       title
       message
+      name
       creator
       tags
       createdAt
@@ -21,6 +22,7 @@ export const GET_POST = gql`
       id
       title
       message
+      name
       creator
       tags
       selectedFile

@@ -13,7 +13,6 @@ import { useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 
 import { AuthAvatar, AuthForm, AuthPaper, AuthSubmit } from "./styles.js";
-import { PROFILE } from "../../queries/authQueries.js";
 import { AuthContext } from "./authContext.js";
 
 const initialState = {

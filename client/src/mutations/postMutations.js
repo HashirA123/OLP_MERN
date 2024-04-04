@@ -4,20 +4,21 @@ export const CREATE_POST = gql`
   mutation createPost(
     $title: String!
     $message: String!
-    $creator: String!
+    $name: String!
     $tags: [String!]
     $selectedFile: String
   ) {
     createPost(
       title: $title
       message: $message
-      creator: $creator
+      name: $name
       tags: $tags
       selectedFile: $selectedFile
     ) {
       id
       title
       message
+      name
       creator
       tags
       createdAt
@@ -32,7 +33,7 @@ export const UPDATE_POST = gql`
     $updatePostId: ID!
     $title: String
     $message: String
-    $creator: String
+    $name: String
     $tags: [String]
     $selectedFile: String
   ) {
@@ -40,13 +41,14 @@ export const UPDATE_POST = gql`
       id: $updatePostId
       title: $title
       message: $message
-      creator: $creator
+      name: $name
       tags: $tags
       selectedFile: $selectedFile
     ) {
       id
       title
       message
+      name
       creator
       tags
       selectedFile
@@ -62,6 +64,7 @@ export const DELETE_POST = gql`
       id
       title
       message
+      name
       creator
       tags
       selectedFile
@@ -77,6 +80,7 @@ export const LIKE_POST = gql`
       id
       title
       message
+      name
       creator
       tags
       selectedFile

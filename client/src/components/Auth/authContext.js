@@ -5,7 +5,7 @@ const initialState = {
   user: null,
 };
 
-if (localStorage.getItem("token") !== "null") {
+if (localStorage.getItem("token") && localStorage.getItem("token") !== "null") {
   //   console.log(localStorage.getItem("token"));
   const decodedToken = jwtDecode(localStorage.getItem("token"));
 
@@ -51,7 +51,7 @@ const AuthProvider = (props) => {
   };
 
   const logout = () => {
-    localStorage.setItem("token", null);
+    localStorage.removeItem("token");
     dispatch({ type: "LOGOUT" });
   };
 

@@ -21,6 +21,7 @@ export const typeDefs = gql`
     title: String!
     message: String!
     creator: String!
+    name: String!
     tags: [String]
     selectedFile: String
     likeCount: Int
@@ -37,7 +38,7 @@ export const typeDefs = gql`
     createPost(
       title: String!
       message: String!
-      creator: String!
+      name: String!
       tags: [String!]
       selectedFile: String
     ): Post
@@ -45,7 +46,7 @@ export const typeDefs = gql`
       id: ID!
       title: String
       message: String
-      creator: String
+      name: String
       tags: [String]
       selectedFile: String
     ): Post

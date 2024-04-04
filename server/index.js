@@ -32,7 +32,7 @@ app.use(
   express.json({ limit: "30mb", extended: true }),
   express.urlencoded({ limit: "30mb", extended: true }),
   expressMiddleware(server, {
-    context: async ({ req }) => ({ token: req.headers.token }),
+    context: async ({ req }) => ({ token: req.headers.authorization }),
   })
 );
 
