@@ -1,31 +1,37 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AppBar, Typography, Avatar, Toolbar, Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styles from "./styles.module.css";
 import memories from "../../images/memories.png";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Auth/authContext.js";
+import { jwtDecode } from "jwt-decode";
 
 export default function Navbar() {
-  //const [user, setUser] = useState(useContext(AuthContext));
   const { user, logout } = useContext(AuthContext);
-  // const {data, client} = useQuery(PROFILE);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // console.log(user);
 
-  // useEffect(() => {
-  //   // const exists = user?.profile;
+  useEffect(() => {
+    if (
+      localStorage.getItem("token") &&
+      localStorage.getItem("token") !== "null"
+    ) {
+      const decodedToken = jwtDecode(localStorage.getItem("token"));
 
-  //   setUser(useContext(AuthContext));
-  // }, [location]);
+      if (decodedToken.exp * 1000 < Date.now()) {
+        logout();
+        navigate("/");
+      }
+    }
+  }, [location]);
 
   const onlogout = async () => {
     logout();
 
     navigate("/");
-
-    // setUser(null);
   };
 
   return (
