@@ -24,7 +24,7 @@ export const typeDefs = gql`
     name: String!
     tags: [String]
     selectedFile: String
-    likeCount: Int
+    likes: [String]
     createdAt: Date
   }
 

@@ -12,6 +12,7 @@ import {
 import moment from "moment";
 import { MdDelete } from "react-icons/md";
 import { FaThumbsUp } from "react-icons/fa";
+import { FaRegThumbsUp } from "react-icons/fa";
 import { IoEllipsisHorizontal } from "react-icons/io5";
 import memories from "../../../images/memories.png";
 import { DELETE_POST, LIKE_POST } from "../../../mutations/postMutations";
@@ -60,6 +61,33 @@ export default function Post({ post }) {
     });
   };
 
+  const Likes = () => {
+    if (post.likes.length > 0) {
+      return post.likes.find((like) => like === user?.id) ? (
+        <>
+          <FaThumbsUp fontSize="small" />
+          &nbsp;
+          {post.likes.length > 2
+            ? `You and ${post.likes.length} others liked`
+            : post.likes.length === 1
+            ? `${post.likes.length} Like`
+            : `${post.likes.length} Likes`}
+        </>
+      ) : (
+        <>
+          <FaRegThumbsUp fontSize="small" />
+          &nbsp;{post.likes.length} {post.likes.length === 1 ? "Like" : "Likes"}
+        </>
+      );
+    }
+    return (
+      <>
+        <FaRegThumbsUp fontSize="small" />
+        &nbsp;Like
+      </>
+    );
+  };
+
   if (post.selectedFile !== "") {
     image = post.selectedFile;
   }
@@ -91,15 +119,17 @@ export default function Post({ post }) {
         </Typography>
       </div>
       <div className={styles.overlay2}>
-        <Button
-          style={{ color: "white" }}
-          size="small"
-          onClick={() => {
-            currentId(post.id);
-          }}
-        >
-          <IoEllipsisHorizontal fontSize="default" />
-        </Button>
+        {user?.id === post.creator && (
+          <Button
+            style={{ color: "white" }}
+            size="small"
+            onClick={() => {
+              currentId(post.id);
+            }}
+          >
+            <IoEllipsisHorizontal fontSize="default" />
+          </Button>
+        )}
       </div>
       <div className={styles.details}>
         <Typography variant="body2" color="textSecondary">
@@ -126,10 +156,7 @@ export default function Post({ post }) {
           color="primary"
           onClick={() => handleLike(post.id)}
         >
-          <FaThumbsUp fontSize="small" />
-          {/* &nbsp; is a space */}
-          Like &nbsp;
-          {post.likeCount}
+          <Likes />
         </Button>
         {user?.id === post.creator && (
           <Button

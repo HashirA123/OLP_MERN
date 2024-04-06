@@ -10,7 +10,7 @@ export const GET_POSTS = gql`
       creator
       tags
       createdAt
-      likeCount
+      likes
       selectedFile
     }
   }
@@ -26,7 +26,7 @@ export const GET_POST = gql`
       creator
       tags
       selectedFile
-      likeCount
+      likes
       createdAt
     }
   }

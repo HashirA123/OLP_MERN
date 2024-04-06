@@ -1,10 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { AppBar, Typography, Avatar, Toolbar, Button } from "@mui/material";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styles from "./styles.module.css";
 import memories from "../../images/memories.png";
-import { client } from "../../App.js";
-import { PROFILE } from "../../queries/authQueries.js";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Auth/authContext.js";
 
@@ -13,7 +11,6 @@ export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
   // const {data, client} = useQuery(PROFILE);
   const navigate = useNavigate();
-  const location = useLocation();
 
   // console.log(user);
 
