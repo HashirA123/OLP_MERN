@@ -42,7 +42,7 @@ This project is a full-stack web application built using the MERN stack (MongoDB
 ### Installation
 
 1. Clone the repository: `git clone <repository-url>`
-2. Navigate to the project directory: `cd online-learning-platform`
+2. Navigate to the project directory: `cd OLP_MERN`
 3. Install dependencies for both the frontend and backend:
    ```bash
    cd client
