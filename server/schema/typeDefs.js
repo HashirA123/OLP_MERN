@@ -32,6 +32,7 @@ export const typeDefs = gql`
     post(id: ID!): Post
     posts: [Post]
     user(email: String!): User
+    getPostBySearch(search: String, tags: [String!]): [Post]
   }
 
   type Mutation {

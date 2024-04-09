@@ -1,12 +1,13 @@
-import { useQuery } from "@apollo/client";
+import { useQuery, useLazyQuery } from "@apollo/client";
 import Post from "./Post/Post";
-import { GET_POSTS } from "../../queries/postQueries";
+import { GET_POSTS, GET_POSTS_BY_SEARCH } from "../../queries/postQueries";
 import { Grid, CircularProgress } from "@mui/material";
 import styles from "./styles.module.css";
 
-export default function Posts() {
-  //const classes = useStyles();
-  const { loading, error, data } = useQuery(GET_POSTS);
+export default function Posts({ searchQuery, tagsQuery }) {
+  const { loading, error, data } = useQuery(GET_POSTS_BY_SEARCH, {
+    variables: { search: searchQuery, tags: tagsQuery },
+  });
 
   if (error) return <p>something went wrong</p>;
   if (loading) return <CircularProgress />;
@@ -21,7 +22,7 @@ export default function Posts() {
         alignItems="stretch"
         spacing={3}
       >
-        {data.posts.map((post) => (
+        {data.getPostBySearch.map((post) => (
           <Grid key={post.id} item xs={12} sm={6}>
             <Post post={post} />
           </Grid>

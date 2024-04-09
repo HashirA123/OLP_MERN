@@ -20,6 +20,7 @@ export default function Home() {
   const query = useQuery();
   const navigate = useNavigate();
   const searchQuery = query.get("searchQuery");
+  const tagsQuery = query.get("tags");
   const [search, setSearch] = useState("");
   const [tags, setTags] = useState([]);
 
@@ -29,8 +30,9 @@ export default function Home() {
     }
   };
 
-  const searchPost = () => {
-    if (search.trim()) {
+  const searchPost = async () => {
+    if (search.trim() || tags.length > 0) {
+      navigate(`/posts/search?searchQuery=${search || "none"}&tags=${tags}`);
     } else {
       navigate("/");
     }
@@ -50,7 +52,7 @@ export default function Home() {
           spacing={3}
         >
           <Grid item xs={12} sm={6} md={9}>
-            <Posts />
+            <Posts searchQuery={searchQuery} tagsQuery={tagsQuery} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <AppBar

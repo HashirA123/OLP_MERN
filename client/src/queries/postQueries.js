@@ -31,3 +31,19 @@ export const GET_POST = gql`
     }
   }
 `;
+
+export const GET_POSTS_BY_SEARCH = gql`
+  query getPostBySearch($search: String, $tags: [String!]) {
+    getPostBySearch(search: $search, tags: $tags) {
+      id
+      title
+      message
+      creator
+      name
+      tags
+      selectedFile
+      likes
+      createdAt
+    }
+  }
+`;

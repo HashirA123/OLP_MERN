@@ -33,15 +33,33 @@ export const resolvers = {
   },
   Query: {
     async post(_, args) {
-      //return clients.find((client) => client.id === args.id);
       return await PostMessage.findById(args.id);
     },
     async posts() {
-      //return clients;
       return await PostMessage.find();
     },
     async user(_, args) {
       return await User.findOne({ email: args.email });
+    },
+    async getPostBySearch(_, args) {
+      if (!args.search && !args.tags) {
+        return await PostMessage.find();
+      }
+      const searchQuery = args.search;
+      const tagsQuery = args.tags; //!== undefined ? args.tags.split(",") : [];
+      let title;
+
+      if (searchQuery !== "none") {
+        title = new RegExp(searchQuery, "i"); // 'i' means ignore case aka lowercase or upper
+      } else {
+        title = "";
+      }
+      const posts = await PostMessage.find({
+        $or: [{ title }, { tags: { $in: tagsQuery } }], // This says find a match with either title OR tags.
+        // Since tags is an array, the $in says find any matching tags that are IN the tags array from query
+      });
+
+      return posts;
     },
   },
   Mutation: {
