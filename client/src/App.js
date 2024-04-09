@@ -6,11 +6,12 @@ import {
   makeVar,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Container, ThemeProvider } from "@mui/material";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./components/Home/Home";
 import Auth from "./components/Auth/Auth";
+import PostDetails from "./components/PostDetails/PostDetails";
 import { customTheme } from "./styles";
 import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist";
 import { AuthProvider } from "./components/Auth/authContext";
@@ -58,16 +59,25 @@ export const client = new ApolloClient({
 });
 
 function App() {
+  const userToken = localStorage.getItem("token");
   return (
     <BrowserRouter>
       <AuthProvider>
         <ApolloProvider client={client}>
           <ThemeProvider theme={customTheme}>
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
               <Navbar />
               <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/auth" element={<Auth />} />
+                <Route path="/" element={<Navigate replace to="/posts" />} />
+                <Route path="/posts" element={<Home />} />
+                <Route path="/posts/search" element={<Home />} />
+                <Route path="/posts/:id" element={<PostDetails />} />
+                <Route
+                  path="/auth"
+                  element={
+                    !userToken ? <Auth /> : <Navigate replace to="/posts" />
+                  }
+                />
               </Routes>
             </Container>
           </ThemeProvider>
