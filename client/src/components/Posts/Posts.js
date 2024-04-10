@@ -1,6 +1,6 @@
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import Post from "./Post/Post";
-import { GET_POSTS, GET_POSTS_BY_SEARCH } from "../../queries/postQueries";
+import { GET_POSTS_BY_SEARCH } from "../../queries/postQueries";
 import { Grid, CircularProgress } from "@mui/material";
 import styles from "./styles.module.css";
 
@@ -23,7 +23,7 @@ export default function Posts({ searchQuery, tagsQuery }) {
         spacing={3}
       >
         {data.getPostBySearch.map((post) => (
-          <Grid key={post.id} item xs={12} sm={6}>
+          <Grid key={post.id} item xs={12} sm={12} md={6} lg={3}>
             <Post post={post} />
           </Grid>
         ))}

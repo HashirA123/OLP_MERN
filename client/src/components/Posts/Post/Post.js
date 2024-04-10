@@ -93,6 +93,8 @@ export default function Post({ post }) {
   }
   return (
     <Card
+      raised
+      elevation={6}
       sx={{
         display: "flex",
         flexDirection: "column",

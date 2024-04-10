@@ -2,7 +2,8 @@ import React, { useContext, useEffect } from "react";
 import { AppBar, Typography, Avatar, Toolbar, Button } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
 import styles from "./styles.module.css";
-import memories from "../../images/memories.png";
+import memoriesLogo from "../../images/memoriesLogo.png";
+import memoriesText from "../../images/memoriesText.png";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Auth/authContext.js";
 import { jwtDecode } from "jwt-decode";
@@ -47,23 +48,15 @@ export default function Navbar() {
       position="static"
       color="inherit"
     >
-      <div className={styles.brandContainer}>
-        <Typography
-          sx={{ color: "rgba(0,183,255, 1)", textDecoration: "none" }}
-          component={Link}
-          to="/"
-          variant="h2"
-          align="center"
-        >
-          Memories
-        </Typography>
+      <Link to="/" className={styles.brandContainer}>
+        <img src={memoriesText} alt="icon" height="45px" />
         <img
           className={styles.image}
-          src={memories}
-          alt="memories"
-          height="60"
+          src={memoriesLogo}
+          alt="icon"
+          height="40px"
         />
-      </div>
+      </Link>
       <Toolbar className={styles.toolbar}>
         {user ? (
           <div className={styles.profile}>
