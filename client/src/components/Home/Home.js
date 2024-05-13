@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Posts from "../Posts/Posts";
+import Posts, { PostsBySeach } from "../Posts/Posts";
 import Form from "../Form/Form";
 import {
   Grow,
@@ -12,7 +12,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { MuiChipsInput } from "mui-chips-input";
 
-function useQuery() {
+export function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
@@ -21,9 +21,11 @@ export default function Home() {
   const navigate = useNavigate();
   const searchQuery = query.get("searchQuery");
   const tagsQuery = query.get("tags");
+  //const page = query.get("page") || "1";
   const [search, setSearch] = useState("");
   const [tags, setTags] = useState([]);
 
+  // if user hits the enter key, search for post(s)
   const handleKeyPress = (e) => {
     if (e.keyCode === 13) {
       searchPost();
@@ -52,7 +54,15 @@ export default function Home() {
           spacing={3}
         >
           <Grid item xs={12} sm={6} md={9}>
-            <Posts searchQuery={searchQuery} tagsQuery={tagsQuery} />
+            {searchQuery || tagsQuery ? (
+              <PostsBySeach
+                searchQuery={searchQuery}
+                tagsQuery={tagsQuery}
+                // page={page}
+              />
+            ) : (
+              <Posts />
+            )}
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <AppBar

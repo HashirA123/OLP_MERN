@@ -35,7 +35,7 @@ export const resolvers = {
     async post(_, args) {
       return await PostMessage.findById(args.id);
     },
-    async posts() {
+    async posts(_, args) {
       return await PostMessage.find();
     },
     async user(_, args) {

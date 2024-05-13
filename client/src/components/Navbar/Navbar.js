@@ -15,6 +15,8 @@ export default function Navbar() {
 
   // console.log(user);
 
+  // This useEffect triggers whenever the location (URL) changes, and the app check to see if
+  // the auth token is still valid, if not it logs the user out.
   useEffect(() => {
     if (
       localStorage.getItem("token") &&
@@ -29,6 +31,7 @@ export default function Navbar() {
     }
   }, [location]);
 
+  // Logout and navigate back to home page
   const onlogout = async () => {
     logout();
 
