@@ -1,12 +1,15 @@
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import Post from "./Post/Post";
 import { GET_POSTS, GET_POSTS_BY_SEARCH } from "../../queries/postQueries";
-import { Grid, CircularProgress } from "@mui/material";
+import { Grid, CircularProgress, Button } from "@mui/material";
 import styles from "./styles.module.css";
 
-export default function Posts({ page }) {
-  const { loading, error, data } = useQuery(GET_POSTS, {
-    // variables: { page: page },
+export default function Posts() {
+  let LIMIT = 8;
+  let offset = 0;
+
+  const { loading, error, data, fetchMore } = useQuery(GET_POSTS, {
+    variables: { offset: offset, limit: LIMIT },
   });
 
   if (error) return <p>something went wrong</p>;
@@ -25,14 +28,33 @@ export default function Posts({ page }) {
             <Post post={post} />
           </Grid>
         ))}
+        <Button
+          onClick={() =>
+            fetchMore({
+              variables: {
+                offset: data.posts.length,
+              },
+            })
+          }
+        >
+          Load More
+        </Button>
       </Grid>
     );
   }
 }
 
 export function PostsBySeach({ searchQuery, tagsQuery }) {
-  const { loading, error, data } = useQuery(GET_POSTS_BY_SEARCH, {
-    variables: { search: searchQuery, tags: tagsQuery },
+  let LIMIT = 8;
+  let offset = 0;
+
+  const { loading, error, data, fetchMore } = useQuery(GET_POSTS_BY_SEARCH, {
+    variables: {
+      offset: offset,
+      limit: LIMIT,
+      search: searchQuery,
+      tags: tagsQuery,
+    },
   });
 
   if (error) return <p>something went wrong</p>;

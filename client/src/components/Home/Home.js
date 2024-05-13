@@ -21,7 +21,7 @@ export default function Home() {
   const navigate = useNavigate();
   const searchQuery = query.get("searchQuery");
   const tagsQuery = query.get("tags");
-  //const page = query.get("page") || "1";
+  // const page = query.get("page") || "1";
   const [search, setSearch] = useState("");
   const [tags, setTags] = useState([]);
 

@@ -19,9 +19,11 @@ import { DELETE_POST, LIKE_POST } from "../../../mutations/postMutations";
 import { GET_POSTS } from "../../../queries/postQueries";
 import { useMutation } from "@apollo/client";
 import { AuthContext } from "../../Auth/authContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Post({ post }) {
   var image = memories;
+  const navigate = useNavigate();
   //const postId = useReactiveVar(currentId);
 
   const [deletePost] = useMutation(DELETE_POST);
@@ -33,12 +35,21 @@ export default function Post({ post }) {
       variables: {
         deletePostId: id,
       },
-      update(cache, { data: { deletePost } }) {
-        const { posts } = cache.readQuery({ query: GET_POSTS });
-        cache.writeQuery({
-          query: GET_POSTS,
-          data: { posts: posts.filter((post) => post.id !== deletePost.id) },
-        });
+      refetchQueries: [GET_POSTS],
+      // update(cache, { data: { deletePost } }) {
+      //   const { posts } = cache.readQuery({ query: GET_POSTS });
+      //   cache.evict({ id: cache.identify(deletePost) });
+      //   cache.gc();
+      //   cache.writeQuery({
+      //     query: GET_POSTS,
+      //     data: {
+      //       posts: posts.filter((post) => post.id !== deletePost.id),
+      //     },
+      //   });
+      // },
+      onError: (error) => {
+        alert("Error, could not delete post");
+        navigate("/posts");
       },
     });
   };
@@ -57,6 +68,10 @@ export default function Post({ post }) {
             ),
           },
         });
+      },
+      onError: (error) => {
+        alert("Error, could not like post");
+        navigate("/posts");
       },
     });
   };

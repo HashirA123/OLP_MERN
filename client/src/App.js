@@ -13,7 +13,7 @@ import Home from "./components/Home/Home";
 import Auth from "./components/Auth/Auth";
 import PostDetails from "./components/PostDetails/PostDetails";
 import { customTheme } from "./styles";
-import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist";
+// import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist";
 import { AuthProvider } from "./components/Auth/authContext";
 
 export const currentId = makeVar(null);
@@ -31,10 +31,42 @@ const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        posts: {
-          merge(existing, incoming) {
-            return incoming;
+        getPostBySearch: {
+          // Don't cache separate results based on
+          // any of this field's arguments.
+          keyArgs: false,
+
+          // Concatenate the incoming list items with
+          // the existing list items.
+          merge(existing, incoming, { args: { offset = 0 } }) {
+            // Slicing is necessary because the existing data is
+            // immutable, and frozen in development.
+            const merged = existing ? existing.slice(0) : [];
+            for (let i = 0; i < incoming.length; ++i) {
+              merged[offset + i] = incoming[i];
+            }
+            return merged;
           },
+        },
+        posts: {
+          // Don't cache separate results based on
+          // any of this field's arguments.
+          keyArgs: false,
+
+          // Concatenate the incoming list items with
+          // the existing list items.
+          merge(existing, incoming, { args: { offset = 0 } }) {
+            // Slicing is necessary because the existing data is
+            // immutable, and frozen in development.
+            const merged = existing ? existing.slice(0) : [];
+            for (let i = 0; i < incoming.length; ++i) {
+              merged[offset + i] = incoming[i];
+            }
+            return merged;
+          },
+          // merge(existing, incoming) {
+          //   return incoming;
+          // },
         },
         post: {
           merge(existing, incoming) {
@@ -46,10 +78,10 @@ const cache = new InMemoryCache({
   },
 });
 
-await persistCache({
-  cache,
-  storage: new LocalStorageWrapper(window.localStorage),
-});
+// await persistCache({
+//   cache,
+//   storage: new LocalStorageWrapper(window.localStorage),
+// });
 
 export const client = new ApolloClient({
   link: authLink.concat(

@@ -36,7 +36,10 @@ export const resolvers = {
       return await PostMessage.findById(args.id);
     },
     async posts(_, args) {
-      return await PostMessage.find();
+      return await PostMessage.find()
+        .sort({ _id: -1 })
+        .limit(args.limit)
+        .skip(args.offset);
     },
     async user(_, args) {
       return await User.findOne({ email: args.email });
@@ -99,7 +102,11 @@ export const resolvers = {
       );
     },
     async deletePost(_, args, contextValue) {
-      if (!contextValue.token || contextValue.token === "null") {
+      if (
+        !contextValue.token ||
+        contextValue.token === "null" ||
+        auth(contextValue?.token) === "error"
+      ) {
         throw new GraphQLError("Please login in order to delete your post", {
           extensions: { code: "USER_NOT_LOGGED_IN" },
         });
@@ -113,6 +120,11 @@ export const resolvers = {
         });
       }
       const userId = auth(contextValue?.token);
+      if (userId === "error") {
+        throw new GraphQLError("Please login in order to like a post", {
+          extensions: { code: "USER_NOT_LOGGED_IN" },
+        });
+      }
       const post = await PostMessage.findById(args.id);
 
       const index = post.likes.findIndex((id) => id === String(userId));

@@ -20,6 +20,7 @@ const auth = (token) => {
     return userId;
   } catch (error) {
     console.log(error);
+    return "error";
   }
 };
 

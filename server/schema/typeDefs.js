@@ -30,9 +30,14 @@ export const typeDefs = gql`
 
   type Query {
     post(id: ID!): Post
-    posts: [Post]
+    posts(offset: Int, limit: Int): [Post]
     user(email: String!): User
-    getPostBySearch(search: String, tags: [String!]): [Post]
+    getPostBySearch(
+      offset: Int
+      limit: Int
+      search: String
+      tags: [String!]
+    ): [Post]
   }
 
   type Mutation {

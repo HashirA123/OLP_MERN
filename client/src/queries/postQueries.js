@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_POSTS = gql`
-  query getPosts {
-    posts {
+  query getPosts($offset: Int, $limit: Int) {
+    posts(offset: $offset, limit: $limit) {
       id
       title
       message
@@ -33,8 +33,18 @@ export const GET_POST = gql`
 `;
 
 export const GET_POSTS_BY_SEARCH = gql`
-  query getPostBySearch($search: String, $tags: [String!]) {
-    getPostBySearch(search: $search, tags: $tags) {
+  query getPostBySearch(
+    $offset: Int
+    $limit: Int
+    $search: String
+    $tags: [String!]
+  ) {
+    getPostBySearch(
+      offset: $offset
+      limit: $limit
+      search: $search
+      tags: $tags
+    ) {
       id
       title
       message
