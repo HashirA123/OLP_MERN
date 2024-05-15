@@ -48,6 +48,7 @@ export default function Home() {
     <Grow in>
       <Container maxWidth="xl">
         <Grid
+          sx={{ display: "flex", flexWrap: "nowrap" }}
           container
           justifyContent="space-between"
           alignItems="stretch"
@@ -64,38 +65,54 @@ export default function Home() {
               <Posts />
             )}
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <AppBar
-              sx={{
-                borderRadius: 4,
-                marginBottom: "1rem",
-                display: "flex",
-                padding: "16px",
-              }}
-              position="static"
-              color="inherit"
+          <Grid
+            sx={{
+              padding: 2,
+            }}
+            item
+            xs={12}
+            sm={6}
+            md={3}
+          >
+            <Container
+              sx={{ position: "sticky", top: "20px", boxSizing: "content-box" }}
             >
-              <TextField
-                name="search"
-                variant="outlined"
-                label="Search Memories"
-                fullWidth
-                value={search}
-                onKeyDown={handleKeyPress}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <MuiChipsInput
-                style={{ margin: "10px 0" }}
-                value={tags}
-                onChange={handleTags}
-                label="Search Tags"
-                variant="outlined"
-              />
-              <Button onClick={searchPost} color="primary" variant="contained">
-                Search
-              </Button>
-            </AppBar>
-            <Form />
+              <AppBar
+                sx={{
+                  borderRadius: 4,
+                  marginBottom: "1rem",
+                  display: "flex",
+                  padding: "16px",
+                }}
+                position="static"
+                color="inherit"
+              >
+                <TextField
+                  name="search"
+                  variant="outlined"
+                  label="Search Memories"
+                  fullWidth
+                  value={search}
+                  onKeyDown={handleKeyPress}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <MuiChipsInput
+                  style={{ margin: "10px 0" }}
+                  value={tags}
+                  onChange={handleTags}
+                  label="Search Tags"
+                  variant="outlined"
+                />
+                <Button
+                  onClick={searchPost}
+                  color="primary"
+                  variant="contained"
+                >
+                  Search
+                </Button>
+              </AppBar>
+              <Form />
+            </Container>
           </Grid>
         </Grid>
       </Container>

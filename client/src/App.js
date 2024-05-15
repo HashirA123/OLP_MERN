@@ -34,7 +34,7 @@ const cache = new InMemoryCache({
         getPostBySearch: {
           // Don't cache separate results based on
           // any of this field's arguments.
-          keyArgs: false,
+          keyArgs: ["search", "tags"],
 
           // Concatenate the incoming list items with
           // the existing list items.

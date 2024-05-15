@@ -3,13 +3,19 @@ import FileBase64 from "react-file-base64";
 import { TextField, Button, Typography, Paper } from "@mui/material";
 import styles from "./styles.module.css";
 import { CREATE_POST, UPDATE_POST } from "../../mutations/postMutations";
-import { GET_POSTS, GET_POST } from "../../queries/postQueries";
+import {
+  GET_POSTS,
+  GET_POST,
+  GET_POSTS_BY_SEARCH,
+} from "../../queries/postQueries";
 import { useMutation, useLazyQuery, useReactiveVar } from "@apollo/client";
 import { currentId } from "../../App";
 import { AuthContext } from "../Auth/authContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Form() {
   const postId = useReactiveVar(currentId);
+  const navigate = useNavigate();
   const [postData, setPostData] = useState({
     title: "",
     message: "",
@@ -70,6 +76,7 @@ export default function Form() {
           tags: postData.tags,
           selectedFile: postData.selectedFile,
         },
+        refetchQueries: [GET_POSTS_BY_SEARCH],
         update(cache, { data: { updatePost } }) {
           const { posts } = cache.readQuery({ query: GET_POSTS });
           cache.writeQuery({
@@ -82,6 +89,7 @@ export default function Form() {
           });
         },
       });
+      navigate("/posts");
     } else {
       createPost({
         variables: {
@@ -91,6 +99,7 @@ export default function Form() {
           tags: postData.tags,
           selectedFile: postData.selectedFile,
         },
+        refetchQueries: [GET_POSTS_BY_SEARCH],
         update(cache, { data: { createPost } }) {
           const { posts } = cache.readQuery({ query: GET_POSTS });
           cache.writeQuery({
@@ -99,6 +108,7 @@ export default function Form() {
           });
         },
       });
+      navigate("/posts");
     }
 
     clear();
@@ -115,7 +125,7 @@ export default function Form() {
   }
 
   return (
-    <Paper sx={{ padding: 1 }}>
+    <Paper sx={{ position: "sticky", top: "auto", padding: 2 }}>
       <form
         autoComplete="off"
         noValidate

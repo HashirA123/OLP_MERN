@@ -1,4 +1,6 @@
 import { useQuery } from "@apollo/client";
+import { Waypoint } from "react-waypoint";
+import React from "react";
 import Post from "./Post/Post";
 import { GET_POSTS, GET_POSTS_BY_SEARCH } from "../../queries/postQueries";
 import { Grid, CircularProgress, Button } from "@mui/material";
@@ -23,22 +25,24 @@ export default function Posts() {
         alignItems="stretch"
         spacing={3}
       >
-        {data.posts.map((post) => (
-          <Grid key={post.id} item xs={12} sm={12} md={6} lg={3}>
-            <Post post={post} />
-          </Grid>
+        {data.posts.map((post, i) => (
+          <React.Fragment key={post.id}>
+            <Grid item xs={12} sm={12} md={6} lg={4}>
+              <Post post={post} />
+            </Grid>
+            {i === data.posts.length - 1 && (
+              <Waypoint
+                onEnter={() =>
+                  fetchMore({
+                    variables: {
+                      offset: data.posts.length,
+                    },
+                  })
+                }
+              />
+            )}
+          </React.Fragment>
         ))}
-        <Button
-          onClick={() =>
-            fetchMore({
-              variables: {
-                offset: data.posts.length,
-              },
-            })
-          }
-        >
-          Load More
-        </Button>
       </Grid>
     );
   }
@@ -68,10 +72,23 @@ export function PostsBySeach({ searchQuery, tagsQuery }) {
         alignItems="stretch"
         spacing={3}
       >
-        {data.getPostBySearch.map((post) => (
-          <Grid key={post.id} item xs={12} sm={12} md={6} lg={3}>
-            <Post post={post} />
-          </Grid>
+        {data.getPostBySearch.map((post, i) => (
+          <React.Fragment key={post.id}>
+            <Grid item xs={12} sm={12} md={6} lg={4}>
+              <Post post={post} />
+            </Grid>
+            {i === data.getPostBySearch.length - 1 && (
+              <Waypoint
+                onEnter={() =>
+                  fetchMore({
+                    variables: {
+                      offset: data.getPostBySearch.length,
+                    },
+                  })
+                }
+              />
+            )}
+          </React.Fragment>
         ))}
       </Grid>
     );

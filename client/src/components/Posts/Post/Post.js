@@ -16,7 +16,7 @@ import { FaRegThumbsUp } from "react-icons/fa";
 import { IoEllipsisHorizontal } from "react-icons/io5";
 import memories from "../../../images/memories.png";
 import { DELETE_POST, LIKE_POST } from "../../../mutations/postMutations";
-import { GET_POSTS } from "../../../queries/postQueries";
+import { GET_POSTS, GET_POSTS_BY_SEARCH } from "../../../queries/postQueries";
 import { useMutation } from "@apollo/client";
 import { AuthContext } from "../../Auth/authContext";
 import { useNavigate } from "react-router-dom";
@@ -35,23 +35,24 @@ export default function Post({ post }) {
       variables: {
         deletePostId: id,
       },
-      refetchQueries: [GET_POSTS],
-      // update(cache, { data: { deletePost } }) {
-      //   const { posts } = cache.readQuery({ query: GET_POSTS });
-      //   cache.evict({ id: cache.identify(deletePost) });
-      //   cache.gc();
-      //   cache.writeQuery({
-      //     query: GET_POSTS,
-      //     data: {
-      //       posts: posts.filter((post) => post.id !== deletePost.id),
-      //     },
-      //   });
-      // },
+      refetchQueries: [GET_POSTS, GET_POSTS_BY_SEARCH],
+      update(cache, { data: { deletePost } }) {
+        //   const { posts } = cache.readQuery({ query: GET_POSTS });
+        cache.evict({ id: cache.identify(deletePost) });
+        cache.gc();
+        //   cache.writeQuery({
+        //     query: GET_POSTS,
+        //     data: {
+        //       posts: posts.filter((post) => post.id !== deletePost.id),
+        //     },
+        //   });
+      },
       onError: (error) => {
         alert("Error, could not delete post");
         navigate("/posts");
       },
     });
+    navigate("/posts");
   };
   const handleLike = (id) => {
     likePost({

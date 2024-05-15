@@ -46,7 +46,10 @@ export const resolvers = {
     },
     async getPostBySearch(_, args) {
       if (!args.search && !args.tags) {
-        return await PostMessage.find();
+        return await PostMessage.find()
+          .sort({ _id: -1 })
+          .limit(args.limit)
+          .skip(args.offset);
       }
       const searchQuery = args.search;
       const tagsQuery = args.tags; //!== undefined ? args.tags.split(",") : [];
@@ -60,7 +63,10 @@ export const resolvers = {
       const posts = await PostMessage.find({
         $or: [{ title }, { tags: { $in: tagsQuery } }], // This says find a match with either title OR tags.
         // Since tags is an array, the $in says find any matching tags that are IN the tags array from query
-      });
+      })
+        .sort({ _id: -1 })
+        .limit(args.limit)
+        .skip(args.offset);
 
       return posts;
     },
