@@ -23,6 +23,7 @@
   .brandContainer {
     display: flex;
     align-items: center;
+    padding-left: 15px;
   }
 
   .purple {
