@@ -1,0 +1,65 @@
+.media {
+    border-radius: 20px;
+    object-fit: cover;
+    width: 100%;
+    max-height: 600px;
+
+  }
+  .card {
+    display: flex;
+    width: 100%;
+  }
+  .section {
+    border-radius: 20px;
+    margin: 10px;
+    width: 50%;
+  }
+  .imageSection {
+    width: 50%;
+    height: auto;
+    margin-left: 20px;
+  }
+  .recommendedPosts {
+    display: flex;
+    /* [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column';
+    }; */
+  }
+  .loadingPaper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-radius: 15px;
+    height: 39vh;
+  }
+  .commentsOuterContainer {
+    display: flex;
+    justify-content: space-between;
+  }
+  .commentsInnerContainer {
+    height: 200px;
+    overflow-y: auto;
+    margin-right: 30px;
+  }
+
+  @media screen and (max-width: 600px ) {
+    .card {
+      display: flex;
+      width: 100%;
+      flex-wrap: wrap;
+      flex-direction: column;
+    }
+    .section {
+      width: fit-content;
+    }
+    .imageSection {
+      margin-left: 0;
+      width: fit-content;
+    }
+
+    .recommendedPosts {
+      display: flex;
+      flex-direction: column;
+    }
+  }

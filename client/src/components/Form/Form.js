@@ -161,7 +161,7 @@ export default function Form() {
           sx={{ margin: 1 }}
           name="tags"
           variant="outlined"
-          label="Tags"
+          label="Tags (Seperate by Comma)"
           fullWidth
           value={postData.tags}
           // the reason for the ...PostData is so the other data presists in the object and is not overwritten.

@@ -8,6 +8,7 @@ import {
   CardMedia,
   Button,
   Typography,
+  CardActionArea,
 } from "@mui/material";
 import moment from "moment";
 import { MdDelete } from "react-icons/md";
@@ -104,6 +105,10 @@ export default function Post({ post }) {
     );
   };
 
+  const openPost = () => {
+    navigate(`/posts/${post.id}`);
+  };
+
   if (post.selectedFile !== "") {
     image = post.selectedFile;
   }
@@ -120,48 +125,51 @@ export default function Post({ post }) {
         position: "relative",
       }}
     >
-      <CardMedia
-        sx={{
-          height: 0,
-          paddingTop: "56.25%",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          backgroundBlendMode: "darken",
-        }}
-        image={image}
-        title={post.title}
-      ></CardMedia>
-      <div className={styles.overlay}>
-        <Typography variant="h6">{post.name}</Typography>
-        <Typography variant="body2">
-          {moment(post.createdAt).fromNow()}
+      <CardActionArea onClick={openPost}>
+        <CardMedia
+          sx={{
+            height: 0,
+            paddingTop: "56.25%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backgroundBlendMode: "darken",
+          }}
+          image={image}
+          title={post.title}
+        ></CardMedia>
+
+        <div className={styles.overlay}>
+          <Typography variant="h6">{post.name}</Typography>
+          <Typography variant="body2">
+            {moment(post.createdAt).fromNow()}
+          </Typography>
+        </div>
+        <div className={styles.overlay2}>
+          {user?.id === post.creator && (
+            <Button
+              style={{ color: "white" }}
+              size="small"
+              onClick={() => {
+                currentId(post.id);
+              }}
+            >
+              <IoEllipsisHorizontal fontSize="default" />
+            </Button>
+          )}
+        </div>
+        <div className={styles.details}>
+          <Typography variant="body2" color="textSecondary">
+            {post.tags.map((tag) => `#${tag} `)}
+          </Typography>
+        </div>
+        <Typography sx={{ padding: "0 16px" }} variant="h5" gutterBottom>
+          {post.title}
         </Typography>
-      </div>
-      <div className={styles.overlay2}>
-        {user?.id === post.creator && (
-          <Button
-            style={{ color: "white" }}
-            size="small"
-            onClick={() => {
-              currentId(post.id);
-            }}
-          >
-            <IoEllipsisHorizontal fontSize="default" />
-          </Button>
-        )}
-      </div>
-      <div className={styles.details}>
-        <Typography variant="body2" color="textSecondary">
-          {post.tags.map((tag) => `#${tag} `)}
-        </Typography>
-      </div>
-      <Typography sx={{ padding: "0 16px" }} variant="h5" gutterBottom>
-        {post.title}
-      </Typography>
-      <CardContent>
-        <Typography variant="body2" color="textSecondary" component="p">
-          {post.message}
-        </Typography>
-      </CardContent>
+        <CardContent>
+          <Typography variant="body2" color="textSecondary" component="p">
+            {post.message}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
       <CardActions
         sx={{
           padding: "0 16px 8px 16px",
