@@ -1,14 +1,74 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Paper, Typography, CircularProgress, Divider } from "@mui/material";
 import moment from "moment";
 import { useParams, useNavigate } from "react-router-dom";
-import { GET_POST, GET_POSTS } from "../../queries/postQueries";
+import { GET_POST, GET_POSTS_BY_SEARCH } from "../../queries/postQueries";
 import { useQuery } from "@apollo/client";
+import memories from "../../images/memories.png";
 
 import styles from "./styles.module.css";
 
-export default function PostDetails() {
+function RecommendedPosts({ postId, searchQuery, tagsQuery }) {
   const navigate = useNavigate();
+
+  const { loading, error, data } = useQuery(GET_POSTS_BY_SEARCH, {
+    variables: {
+      offset: 0,
+      limit: 8,
+      search: searchQuery,
+      tags: tagsQuery,
+    },
+  });
+
+  if (error) return <p>something went wrong</p>;
+  if (loading) return <CircularProgress />;
+
+  const recommendedPosts = data?.getPostBySearch.filter(
+    ({ id }) => id !== postId
+  );
+
+  const openPost = (id) => {
+    navigate(`/posts/${id}`);
+  };
+
+  if (recommendedPosts.length) {
+    return (
+      <div className={styles.section}>
+        <Typography gutterBottom variant="h5">
+          You might also enjoy
+        </Typography>
+        <Divider />
+        <div className={styles.recommendedPosts}>
+          {recommendedPosts.map(
+            ({ title, message, name, tags, likes, selectedFile, id }) => (
+              <div
+                style={{ margin: "20px", cursor: "pointer" }}
+                onClick={() => openPost(id)}
+                key={id}
+              >
+                <Typography gutterBottom variant="h6">
+                  {title}
+                </Typography>
+                <Typography gutterBottom variant="subtitle2">
+                  {name}
+                </Typography>
+                <Typography gutterBottom variant="subtitle2">
+                  {message}
+                </Typography>
+                <Typography gutterBottom variant="subtitle1">
+                  Likes: {likes.length}
+                </Typography>
+                <img src={selectedFile || memories} width="200px" />
+              </div>
+            )
+          )}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default function PostDetails() {
   const { id } = useParams();
 
   const { loading, error, data } = useQuery(GET_POST, {
@@ -60,6 +120,11 @@ export default function PostDetails() {
           />
         </div>
       </div>
+      <RecommendedPosts
+        postId={post.id}
+        searchQuery="none"
+        tagsQuery={post?.tags.join(",")}
+      />
     </Paper>
   );
 }
