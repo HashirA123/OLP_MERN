@@ -26,6 +26,7 @@ export const typeDefs = gql`
     selectedFile: String
     likes: [String]
     createdAt: Date
+    comments: [String]
   }
 
   type Query {
@@ -58,6 +59,7 @@ export const typeDefs = gql`
     ): Post
     deletePost(id: ID!): Post
     likePost(id: ID!): Post
+    commentPost(value: String!, id: ID!): Post
     signUpGoogle(email: String!, name: String!, pfp: String): UserTokens
     signUp(
       email: String!

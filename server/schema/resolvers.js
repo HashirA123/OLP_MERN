@@ -142,6 +142,31 @@ export const resolvers = {
       }
       return await PostMessage.findByIdAndUpdate(args.id, post, { new: true });
     },
+
+    async commentPost(_, args, contextValue) {
+      if (!contextValue.token || contextValue.token === "null") {
+        throw new GraphQLError("Please login in order to like a post", {
+          extensions: { code: "USER_NOT_LOGGED_IN" },
+        });
+      }
+      const userId = auth(contextValue?.token);
+      if (userId === "error") {
+        throw new GraphQLError("Please login in order to like a post", {
+          extensions: { code: "USER_NOT_LOGGED_IN" },
+        });
+      }
+
+      const post = await PostMessage.findById(args.id);
+
+      post.comments.push(args.value);
+
+      const updatedPost = await PostMessage.findByIdAndUpdate(args.id, post, {
+        new: true,
+      });
+
+      return updatedPost;
+    },
+
     async signUpGoogle(_, args) {
       const userExist = await User.findOne({
         email: args.email.toLowerCase(),

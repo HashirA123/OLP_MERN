@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { GET_POST, GET_POSTS_BY_SEARCH } from "../../queries/postQueries";
 import { useQuery } from "@apollo/client";
 import memories from "../../images/memories.png";
+import CommentSection from "./CommentSection";
 
 import styles from "./styles.module.css";
 
@@ -58,7 +59,7 @@ function RecommendedPosts({ postId, searchQuery, tagsQuery }) {
                 <Typography gutterBottom variant="subtitle1">
                   Likes: {likes.length}
                 </Typography>
-                <img src={selectedFile || memories} width="200px" />
+                <img alt={name} src={selectedFile || memories} width="200px" />
               </div>
             )
           )}
@@ -103,11 +104,6 @@ export default function PostDetails() {
             {moment(post.createdAt).fromNow()}
           </Typography>
           <Divider style={{ margin: "20px 0" }} />
-          <Typography variant="body1">
-            <strong>Comments Chat - coming soon!</strong>
-          </Typography>
-          <Divider style={{ margin: "20px 0" }} />
-          <Divider style={{ margin: "20px 0" }} />
         </div>
         <div className={styles.imageSection}>
           <img
@@ -120,6 +116,8 @@ export default function PostDetails() {
           />
         </div>
       </div>
+      <CommentSection post={post} />
+      <Divider style={{ margin: "20px 0" }} />
       <RecommendedPosts
         postId={post.id}
         searchQuery="none"

@@ -24,6 +24,7 @@ export const CREATE_POST = gql`
       createdAt
       likes
       selectedFile
+      comments
     }
   }
 `;
@@ -54,6 +55,7 @@ export const UPDATE_POST = gql`
       selectedFile
       likes
       createdAt
+      comments
     }
   }
 `;
@@ -86,6 +88,15 @@ export const LIKE_POST = gql`
       selectedFile
       likes
       createdAt
+    }
+  }
+`;
+
+export const COMMENT_POST = gql`
+  mutation commentPost($value: String!, $commentPostId: ID!) {
+    commentPost(value: $value, id: $commentPostId) {
+      id
+      comments
     }
   }
 `;

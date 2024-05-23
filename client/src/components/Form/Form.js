@@ -149,6 +149,8 @@ export default function Form() {
           sx={{ margin: 1 }}
           name="message"
           variant="outlined"
+          multiline
+          rows={4}
           label="Message"
           fullWidth
           value={postData.message}

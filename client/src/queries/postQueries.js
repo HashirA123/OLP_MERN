@@ -28,6 +28,7 @@ export const GET_POST = gql`
       selectedFile
       likes
       createdAt
+      comments
     }
   }
 `;

@@ -40,6 +40,7 @@
   }
   .commentsInnerContainer {
     height: 200px;
+    width: 50%;
     overflow-y: auto;
     margin-right: 30px;
   }

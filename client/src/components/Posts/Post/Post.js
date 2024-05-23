@@ -143,19 +143,6 @@ export default function Post({ post }) {
             {moment(post.createdAt).fromNow()}
           </Typography>
         </div>
-        <div className={styles.overlay2}>
-          {user?.id === post.creator && (
-            <Button
-              style={{ color: "white" }}
-              size="small"
-              onClick={() => {
-                currentId(post.id);
-              }}
-            >
-              <IoEllipsisHorizontal fontSize="default" />
-            </Button>
-          )}
-        </div>
         <div className={styles.details}>
           <Typography variant="body2" color="textSecondary">
             {post.tags.map((tag) => `#${tag} `)}
@@ -166,10 +153,25 @@ export default function Post({ post }) {
         </Typography>
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
-            {post.message}
+            {post.message.length > 40
+              ? post.message.substring(0, 40) + "... Show More"
+              : post.message}
           </Typography>
         </CardContent>
       </CardActionArea>
+      <div className={styles.overlay2}>
+        {user?.id === post.creator && (
+          <Button
+            style={{ color: "white" }}
+            size="small"
+            onClick={() => {
+              currentId(post.id);
+            }}
+          >
+            <IoEllipsisHorizontal fontSize="default" />
+          </Button>
+        )}
+      </div>
       <CardActions
         sx={{
           padding: "0 16px 8px 16px",
