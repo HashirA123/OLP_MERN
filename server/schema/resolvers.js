@@ -45,14 +45,14 @@ export const resolvers = {
       return await User.findOne({ email: args.email });
     },
     async getPostBySearch(_, args) {
-      if (!args.search && !args.tags) {
+      if (args.search === "none" && args.tags[0] === "") {
         return await PostMessage.find()
           .sort({ _id: -1 })
           .limit(args.limit)
           .skip(args.offset);
       }
       const searchQuery = args.search;
-      const tagsQuery = args.tags; //!== undefined ? args.tags.split(",") : [];
+      const tagsQuery = args.tags[0] ? args.tags[0].split(",") : [];
       let title;
 
       if (searchQuery !== "none") {
@@ -72,6 +72,23 @@ export const resolvers = {
     },
   },
   Mutation: {
+    async createPosts(_, args) {
+      return await Promise.all(
+        args.posts.map(async (post) => {
+          const p = new PostMessage({
+            title: post.title,
+            message: post.message,
+            name: post.name,
+            creator: "Admin",
+            tags: post.tags,
+            selectedFile: post.selectedFile,
+            createdAt: new Date().toISOString(),
+          });
+
+          return await p.save();
+        })
+      );
+    },
     async createPost(_, args, contextValue) {
       if (!contextValue.token || contextValue.token === "null") {
         throw new GraphQLError("Please login in order to create your post", {

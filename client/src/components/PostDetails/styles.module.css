@@ -22,6 +22,7 @@
   .recommendedPosts {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     /* [theme.breakpoints.down('sm')]: {
       flexDirection: 'column';
     }; */
@@ -45,7 +46,18 @@
     margin-right: 30px;
   }
 
-  @media screen and (max-width: 600px ) {
+  .post {
+    width: 20%;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+    overflow: hidden;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+    margin: 20px;
+    padding: 10px;
+    cursor: pointer;
+  }
+
+  @media screen and (max-width: 900px ) {
     .card {
       display: flex;
       width: 100%;
@@ -63,5 +75,17 @@
     .recommendedPosts {
       display: flex;
       flex-direction: column;
+      align-content: center;
+    }
+
+    .post {
+      width: 80%;
+      border-radius: 8px;
+      background-color: #f0f0f0;
+      overflow: hidden;
+      box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+      margin: 20px;
+      padding: 10px;
+      cursor: pointer;
     }
   }

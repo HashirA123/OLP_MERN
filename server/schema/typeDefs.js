@@ -16,6 +16,14 @@ export const typeDefs = gql`
     pfp: String
   }
 
+  input PostInput {
+    title: String!
+    message: String!
+    name: String!
+    tags: [String]
+    selectedFile: String
+  }
+
   type Post {
     id: ID!
     title: String!
@@ -49,6 +57,7 @@ export const typeDefs = gql`
       tags: [String!]
       selectedFile: String
     ): Post
+    createPosts(posts: [PostInput]): [Post]
     updatePost(
       id: ID!
       title: String

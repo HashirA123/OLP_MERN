@@ -43,7 +43,7 @@ function RecommendedPosts({ postId, searchQuery, tagsQuery }) {
           {recommendedPosts.map(
             ({ title, message, name, tags, likes, selectedFile, id }) => (
               <div
-                style={{ margin: "20px", cursor: "pointer" }}
+                className={styles.post}
                 onClick={() => openPost(id)}
                 key={id}
               >
@@ -59,7 +59,17 @@ function RecommendedPosts({ postId, searchQuery, tagsQuery }) {
                 <Typography gutterBottom variant="subtitle1">
                   Likes: {likes.length}
                 </Typography>
-                <img alt={name} src={selectedFile || memories} width="200px" />
+                <div style={{ height: "50%", width: "100%" }}>
+                  <img
+                    alt={name}
+                    src={selectedFile || memories}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                    }}
+                  />
+                </div>
               </div>
             )
           )}
