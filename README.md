@@ -4,6 +4,28 @@
 
 This project is a full-stack web application built using the MERN stack (MongoDB, Express.js, React.js, Node.js) along with Apollo GraphQL. It is designed as an online learning platform with features reminiscent of a social media platform, allowing users to interact with posts and other users.
 
+## Images
+
+#### Home Page
+
+![Home Page](./server/images/HomeLoggedIn.png)
+
+#### Login Page
+
+![Home Page](./server/images/Login.png)
+
+#### SignUp Page
+
+![Home Page](./server/images/SignUp.png)
+
+#### Post Details Page
+
+![Home Page](./server/images/PostDetails.png)
+
+#### Recomended Section
+
+![Home Page](./server/images/RecomendedPosts.png)
+
 ## Features
 
 - **Authentication**: Users can sign up, log in, and log out securely. It also includes integration with Google OAuth for easy registration and login.
