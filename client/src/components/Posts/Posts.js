@@ -3,7 +3,7 @@ import { Waypoint } from "react-waypoint";
 import React from "react";
 import Post from "./Post/Post";
 import { GET_POSTS, GET_POSTS_BY_SEARCH } from "../../queries/postQueries";
-import { Grid, CircularProgress, Button } from "@mui/material";
+import { Grid, CircularProgress } from "@mui/material";
 import styles from "./styles.module.css";
 
 export default function Posts() {

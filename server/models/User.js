@@ -12,8 +12,17 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
   },
+  caption: {
+    type: String,
+    default: "",
+  },
+  interests: {
+    type: [String],
+    default: [],
+  },
   pfp: {
     type: String,
+    default: String,
   },
 });
 

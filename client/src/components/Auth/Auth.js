@@ -4,12 +4,9 @@ import { FaUserLock } from "react-icons/fa";
 import Input from "./Input.js";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
-import {
-  SIGN_IN,
-  SIGN_UP,
-  SIGN_UP_GOOGLE,
-} from "../../mutations/authMutations.js";
-import { useMutation } from "@apollo/client";
+import { SIGN_UP, SIGN_UP_GOOGLE } from "../../mutations/authMutations.js";
+import { SIGN_IN } from "../../queries/authQueries.js";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 
 import { AuthAvatar, AuthForm, AuthPaper, AuthSubmit } from "./styles.js";
@@ -31,7 +28,7 @@ export default function Auth() {
   const navigate = useNavigate();
   const context = useContext(AuthContext);
   const [signUpGoogle] = useMutation(SIGN_UP_GOOGLE);
-  const [signIn] = useMutation(SIGN_IN);
+  const [signIn] = useLazyQuery(SIGN_IN);
   const [signUp] = useMutation(SIGN_UP);
 
   const handleSubmit = (e) => {
@@ -46,6 +43,7 @@ export default function Auth() {
           password: formData["password"],
           confirmPassword: formData["confirmPassword"],
         },
+        fetchPolicy: "no-cache",
         update(proxy, { data: { signUp } }) {
           context.login(signUp);
           navigate("/");
@@ -60,8 +58,9 @@ export default function Auth() {
           email: formData["email"],
           password: formData["password"],
         },
-        update(proxy, { data: { signIn } }) {
-          context.login(signIn);
+        fetchPolicy: "no-cache",
+        onCompleted(data) {
+          context.login(data.signIn);
           navigate("/");
         },
         onError({ graphQLErrors }) {
@@ -80,6 +79,7 @@ export default function Auth() {
         email: decoded["email"],
         pfp: decoded["picture"],
       },
+      fetchPolicy: "no-cache",
       update(proxy, { data: { signUpGoogle } }) {
         context.login(signUpGoogle);
         navigate("/");

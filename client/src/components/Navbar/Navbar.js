@@ -13,8 +13,6 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // console.log(user);
-
   // This useEffect triggers whenever the location (URL) changes, and the app check to see if
   // the auth token is still valid, if not it logs the user out.
   useEffect(() => {
@@ -38,6 +36,10 @@ export default function Navbar() {
     navigate("/");
   };
 
+  const handleProfile = () => {
+    navigate("/profile");
+  };
+
   return (
     <AppBar
       sx={{
@@ -58,10 +60,21 @@ export default function Navbar() {
       <Toolbar className={styles.toolbar}>
         {user ? (
           <div className={styles.profile}>
-            <Avatar className={styles.purple} alt={user.name} src={user.pfp}>
+            <Avatar
+              onClick={handleProfile}
+              style={{ cursor: "pointer" }}
+              className={styles.purple}
+              alt={user.name}
+              src={user.pfp}
+            >
               {user.name.charAt(0)}
             </Avatar>
-            <Typography className={styles.userName} variant="h6">
+            <Typography
+              onClick={handleProfile}
+              style={{ cursor: "pointer" }}
+              className={styles.userName}
+              variant="h6"
+            >
               {user.name}
             </Typography>
             <Button

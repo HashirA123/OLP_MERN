@@ -70,6 +70,41 @@ export const resolvers = {
 
       return posts;
     },
+    async signIn(_, args) {
+      const userExist = await User.findOne({
+        email: args.email.toLowerCase(),
+      });
+
+      if (!userExist) {
+        throw new GraphQLError("User does not exist", {
+          extensions: { code: "USER_DOES_NOT_EXIST" },
+        });
+      }
+
+      const isPasswordCorrect = await bcrypt.compare(
+        args.password,
+        userExist.password
+      );
+
+      if (!isPasswordCorrect) {
+        throw new GraphQLError("Invalid Credentials", {
+          extensions: { code: "INVALID_CREDENTIALS" },
+        });
+      }
+
+      const token = jwt.sign(
+        {
+          email: userExist.email,
+          id: userExist._id,
+          name: userExist.name,
+          pfp: userExist.pfp,
+        },
+        "test",
+        { expiresIn: "1h" }
+      );
+
+      return { user: userExist, token: token };
+    },
   },
   Mutation: {
     async createPosts(_, args) {
@@ -272,41 +307,6 @@ export const resolvers = {
       );
 
       return { user: result, token: token };
-    },
-    async signIn(_, args) {
-      const userExist = await User.findOne({
-        email: args.email.toLowerCase(),
-      });
-
-      if (!userExist) {
-        throw new GraphQLError("User does not exist", {
-          extensions: { code: "USER_DOES_NOT_EXIST" },
-        });
-      }
-
-      const isPasswordCorrect = await bcrypt.compare(
-        args.password,
-        userExist.password
-      );
-
-      if (!isPasswordCorrect) {
-        throw new GraphQLError("Invalid Credentials", {
-          extensions: { code: "INVALID_CREDENTIALS" },
-        });
-      }
-
-      const token = jwt.sign(
-        {
-          email: userExist.email,
-          id: userExist._id,
-          name: userExist.name,
-          pfp: userExist.pfp,
-        },
-        "test",
-        { expiresIn: "1h" }
-      );
-
-      return { user: userExist, token: token };
     },
   },
 };

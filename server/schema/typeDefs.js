@@ -13,6 +13,8 @@ export const typeDefs = gql`
     name: String!
     email: String!
     password: String!
+    caption: String
+    interests: [String]
     pfp: String
   }
 
@@ -41,6 +43,7 @@ export const typeDefs = gql`
     post(id: ID!): Post
     posts(offset: Int, limit: Int): [Post]
     user(email: String!): User
+    signIn(email: String!, password: String!): UserTokens
     getPostBySearch(
       offset: Int
       limit: Int
@@ -77,6 +80,5 @@ export const typeDefs = gql`
       password: String!
       confirmPassword: String
     ): UserTokens
-    signIn(email: String!, password: String!): UserTokens
   }
 `;
