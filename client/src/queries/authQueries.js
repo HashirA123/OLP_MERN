@@ -11,6 +11,7 @@ export const SIGN_IN = gql`
 export const GET_USER = gql`
   query ($email: String!) {
     user(email: $email) {
+      id
       name
       email
       caption

@@ -45,6 +45,12 @@ export const resolvers = {
       return await User.findOne({ email: args.email });
     },
     async getPostBySearch(_, args) {
+      if (args.userId) {
+        return await PostMessage.find({ creator: args.userId })
+          .sort({ _id: -1 })
+          .limit(args.limit)
+          .skip(args.offset);
+      }
       if (args.search === "none" && args.tags[0] === "") {
         return await PostMessage.find()
           .sort({ _id: -1 })

@@ -48,7 +48,7 @@ export default function Posts() {
   }
 }
 
-export function PostsBySeach({ searchQuery, tagsQuery }) {
+export function PostsBySeach({ searchQuery, tagsQuery, userId }) {
   let LIMIT = 8;
   let offset = 0;
 
@@ -58,6 +58,7 @@ export function PostsBySeach({ searchQuery, tagsQuery }) {
       limit: LIMIT,
       search: searchQuery,
       tags: tagsQuery,
+      userId: userId,
     },
   });
 

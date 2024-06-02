@@ -49,6 +49,7 @@ export const typeDefs = gql`
       limit: Int
       search: String
       tags: [String!]
+      userId: String
     ): [Post]
   }
 

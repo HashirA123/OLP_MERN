@@ -39,12 +39,14 @@ export const GET_POSTS_BY_SEARCH = gql`
     $limit: Int
     $search: String
     $tags: [String!]
+    $userId: String
   ) {
     getPostBySearch(
       offset: $offset
       limit: $limit
       search: $search
       tags: $tags
+      userId: $userId
     ) {
       id
       title
