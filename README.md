@@ -29,9 +29,9 @@ This project is a full-stack web application built using the MERN stack (MongoDB
 ## Features
 
 - **Authentication**: Users can sign up, log in, and log out securely. It also includes integration with Google OAuth for easy registration and login.
-- **User Profiles**: Users have their profiles where they can view their courses, edit personal information, and see their progress.
-- **Search Functionality**: Users can search for courses based on keywords, categories, or topics.
-- **Social Interaction**: Users can like, comment, and share courses with others.
+- **User Profiles**: Users have their profiles where they can view their posts, edit personal information, and create/edit posts.
+- **Search Functionality**: Users can search for posts based on keywords, categories, or topics.
+- **Social Interaction**: Users can like, comment, and share posts with others.
 
 ## Technologies Used
 
