@@ -84,3 +84,14 @@ This project is a full-stack web application built using the MERN stack (MongoDB
     GOOGLE_CLIENT_ID=<your-google-client-id>
     GOOGLE_CLIENT_SECRET=<your-google-client-secret>
 ```
+
+### Running the project
+
+- Run the following commands
+
+```bash
+   cd server
+   npm run dev
+   cd client
+   npm start
+```
