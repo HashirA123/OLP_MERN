@@ -1,4 +1,3 @@
-import { makeVar } from "@apollo/client";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Container, ThemeProvider } from "@mui/material";
 import Navbar from "./components/Navbar/Navbar";
@@ -11,8 +10,6 @@ import { customTheme } from "./styles";
 import Profile from "./components/Profile/Profile";
 import { useContext } from "react";
 import { AuthContext } from "./components/Auth/authContext";
-
-export const currentId = makeVar(null);
 
 function App() {
   const { user } = useContext(AuthContext);

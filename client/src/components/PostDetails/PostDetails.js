@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Paper, Typography, CircularProgress, Divider } from "@mui/material";
 import moment from "moment";
 import { useParams, useNavigate } from "react-router-dom";
@@ -6,8 +6,10 @@ import { GET_POST, GET_POSTS_BY_SEARCH } from "../../queries/postQueries";
 import { useQuery } from "@apollo/client";
 import memories from "../../images/memories.png";
 import CommentSection from "./CommentSection";
+import { AuthContext } from "../Auth/authContext";
 
 import styles from "./styles.module.css";
+import { FormEdit } from "../Form/Form";
 
 function RecommendedPosts({ postId, searchQuery, tagsQuery }) {
   const navigate = useNavigate();
@@ -81,6 +83,7 @@ function RecommendedPosts({ postId, searchQuery, tagsQuery }) {
 
 export default function PostDetails() {
   const { id } = useParams();
+  const { user } = useContext(AuthContext);
 
   const { loading, error, data } = useQuery(GET_POST, {
     variables: { postId: id },
@@ -113,6 +116,9 @@ export default function PostDetails() {
           <Typography variant="body1">
             {moment(post.createdAt).fromNow()}
           </Typography>
+          <div className={styles.overlay2}>
+            {user?.id === post.creator ? <FormEdit post={post} /> : <></>}
+          </div>
           <Divider style={{ margin: "20px 0" }} />
         </div>
         <div className={styles.imageSection}>

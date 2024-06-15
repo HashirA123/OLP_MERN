@@ -3,8 +3,8 @@ import {
   Paper,
   Typography,
   Container,
-  Grid,
   Grow,
+  Button,
 } from "@mui/material";
 import { AuthContext } from "../Auth/authContext.js";
 import React, { useContext } from "react";
@@ -13,6 +13,7 @@ import { useQuery } from "@apollo/client";
 import { GET_USER } from "../../queries/authQueries.js";
 import defualtUser from "../../images/user.jpg";
 import { PostsBySeach } from "../Posts/Posts.js";
+import Form from "../Form/Form.js";
 
 export default function Profile() {
   const { user } = useContext(AuthContext);
@@ -22,8 +23,6 @@ export default function Profile() {
 
   if (error) return <p>something went wrong {error}</p>;
   if (loading) return <CircularProgress />;
-
-  console.log(data.user);
 
   return (
     <>
@@ -47,6 +46,18 @@ export default function Profile() {
             data.user.interests.map((interest, index) => {
               return <Typography key={index}>{interest}</Typography>;
             })}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Form />
+            <Button color="secondary" variant="contained">
+              Edit Profile
+            </Button>
+          </div>
         </div>
 
         <img
@@ -63,9 +74,7 @@ export default function Profile() {
       </Paper>
       <Grow in sx={{ marginTop: "20px" }}>
         <Container maxWidth="xl">
-          <Grid item xs={12} sm={6} md={9}>
-            <PostsBySeach userId={data.user.id} />
-          </Grid>
+          <PostsBySeach userId={data.user.id} />
         </Container>
       </Grow>
     </>

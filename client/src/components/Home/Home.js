@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Posts, { PostsBySeach } from "../Posts/Posts";
-import Form from "../Form/Form";
 import {
   Grow,
   Grid,
@@ -111,7 +110,6 @@ export default function Home() {
                   Search
                 </Button>
               </AppBar>
-              <Form />
             </Container>
           </Grid>
         </Grid>

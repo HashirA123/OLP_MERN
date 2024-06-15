@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { currentId } from "../../../App";
 import styles from "./styles.module.css";
 import {
   Card,
@@ -14,7 +13,7 @@ import moment from "moment";
 import { MdDelete } from "react-icons/md";
 import { FaThumbsUp } from "react-icons/fa";
 import { FaRegThumbsUp } from "react-icons/fa";
-import { IoEllipsisHorizontal } from "react-icons/io5";
+
 import memories from "../../../images/memories.png";
 import { DELETE_POST, LIKE_POST } from "../../../mutations/postMutations";
 import { GET_POSTS, GET_POSTS_BY_SEARCH } from "../../../queries/postQueries";
@@ -159,19 +158,6 @@ export default function Post({ post }) {
           </Typography>
         </CardContent>
       </CardActionArea>
-      <div className={styles.overlay2}>
-        {user?.id === post.creator && (
-          <Button
-            style={{ color: "white" }}
-            size="small"
-            onClick={() => {
-              currentId(post.id);
-            }}
-          >
-            <IoEllipsisHorizontal fontSize="default" />
-          </Button>
-        )}
-      </div>
       <CardActions
         sx={{
           padding: "0 16px 8px 16px",
