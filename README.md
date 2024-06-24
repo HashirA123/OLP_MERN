@@ -81,7 +81,6 @@ This project is a full-stack web application built using the MERN stack (MongoDB
     PORT=4000
     MONGODB_URI=<your-mongodb-uri>
     JWT_SECRET=<your-jwt-secret>
-    GOOGLE_CLIENT_ID=<your-google-client-id>
     GOOGLE_CLIENT_SECRET=<your-google-client-secret>
 ```
 

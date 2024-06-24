@@ -33,102 +33,132 @@ export const resolvers = {
   },
   Query: {
     async post(_, args) {
-      return await PostMessage.findById(args.id);
+      try {
+        return await PostMessage.findById(args.id);
+      } catch (error) {
+        console.log(error);
+        return error;
+      }
     },
     async posts(_, args) {
-      return await PostMessage.find()
-        .sort({ _id: -1 })
-        .limit(args.limit)
-        .skip(args.offset);
-    },
-    async user(_, args) {
-      return await User.findOne({ email: args.email });
-    },
-    async getPostBySearch(_, args) {
-      if (args.userId) {
-        return await PostMessage.find({ creator: args.userId })
-          .sort({ _id: -1 })
-          .limit(args.limit)
-          .skip(args.offset);
-      }
-      if (args.search === "none" && args.tags[0] === "") {
+      try {
         return await PostMessage.find()
           .sort({ _id: -1 })
           .limit(args.limit)
           .skip(args.offset);
+      } catch (error) {
+        console.log(error);
+        return error;
       }
-      const searchQuery = args.search;
-      const tagsQuery = args.tags[0] ? args.tags[0].split(",") : [];
-      let title;
-
-      if (searchQuery !== "none") {
-        title = new RegExp(searchQuery, "i"); // 'i' means ignore case aka lowercase or upper
-      } else {
-        title = "";
+    },
+    async user(_, args) {
+      try {
+        return await User.findOne({ email: args.email });
+      } catch (error) {
+        console.log(error);
+        return error;
       }
-      const posts = await PostMessage.find({
-        $or: [{ title }, { tags: { $in: tagsQuery } }], // This says find a match with either title OR tags.
-        // Since tags is an array, the $in says find any matching tags that are IN the tags array from query
-      })
-        .sort({ _id: -1 })
-        .limit(args.limit)
-        .skip(args.offset);
+    },
+    async getPostBySearch(_, args) {
+      try {
+        if (args.userId) {
+          return await PostMessage.find({ creator: args.userId })
+            .sort({ _id: -1 })
+            .limit(args.limit)
+            .skip(args.offset);
+        }
+        if (args.search === "none" && args.tags[0] === "") {
+          return await PostMessage.find()
+            .sort({ _id: -1 })
+            .limit(args.limit)
+            .skip(args.offset);
+        }
+        const searchQuery = args.search;
+        const tagsQuery = args.tags[0] ? args.tags[0].split(",") : [];
+        let title;
 
-      return posts;
+        if (searchQuery !== "none") {
+          title = new RegExp(searchQuery, "i"); // 'i' means ignore case aka lowercase or upper
+        } else {
+          title = "";
+        }
+        const posts = await PostMessage.find({
+          $or: [{ title }, { tags: { $in: tagsQuery } }], // This says find a match with either title OR tags.
+          // Since tags is an array, the $in says find any matching tags that are IN the tags array from query
+        })
+          .sort({ _id: -1 })
+          .limit(args.limit)
+          .skip(args.offset);
+
+        return posts;
+      } catch (error) {
+        console.log(error);
+        return error;
+      }
     },
     async signIn(_, args) {
-      const userExist = await User.findOne({
-        email: args.email.toLowerCase(),
-      });
-
-      if (!userExist) {
-        throw new GraphQLError("User does not exist", {
-          extensions: { code: "USER_DOES_NOT_EXIST" },
+      try {
+        const userExist = await User.findOne({
+          email: args.email.toLowerCase(),
         });
+
+        if (!userExist) {
+          throw new GraphQLError("User does not exist", {
+            extensions: { code: "USER_DOES_NOT_EXIST" },
+          });
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(
+          args.password,
+          userExist.password
+        );
+
+        if (!isPasswordCorrect) {
+          throw new GraphQLError("Invalid Credentials", {
+            extensions: { code: "INVALID_CREDENTIALS" },
+          });
+        }
+
+        const token = jwt.sign(
+          {
+            email: userExist.email,
+            id: userExist._id,
+            name: userExist.name,
+            pfp: userExist.pfp,
+          },
+          "test",
+          { expiresIn: "1h" }
+        );
+
+        return { user: userExist, token: token };
+      } catch (error) {
+        console.log(error);
+        return error;
       }
-
-      const isPasswordCorrect = await bcrypt.compare(
-        args.password,
-        userExist.password
-      );
-
-      if (!isPasswordCorrect) {
-        throw new GraphQLError("Invalid Credentials", {
-          extensions: { code: "INVALID_CREDENTIALS" },
-        });
-      }
-
-      const token = jwt.sign(
-        {
-          email: userExist.email,
-          id: userExist._id,
-          name: userExist.name,
-          pfp: userExist.pfp,
-        },
-        "test",
-        { expiresIn: "1h" }
-      );
-
-      return { user: userExist, token: token };
     },
   },
   Mutation: {
     async createPosts(_, args) {
-      return await Promise.all(
-        args.posts.map(async (post) => {
-          const p = new PostMessage({
-            title: post.title,
-            message: post.message,
-            name: post.name,
-            creator: "Admin",
-            tags: post.tags,
-            selectedFile: post.selectedFile,
-            createdAt: new Date().toISOString(),
-          });
+      try {
+        return await Promise.all(
+          args.posts.map(async (post) => {
+            const p = new PostMessage({
+              title: post.title,
+              message: post.message,
+              name: post.name,
+              creator: "Admin",
+              tags: post.tags,
+              selectedFile: post.selectedFile,
+              createdAt: new Date().toISOString(),
+            });
 
-          return await p.save();
-        })
-      );
+            return await p.save();
+          })
+        );
+      } catch (error) {
+        console.log(error);
+        return error;
+      }
     },
     async createPost(_, args, contextValue) {
       if (!contextValue.token || contextValue.token === "null") {
@@ -136,34 +166,44 @@ export const resolvers = {
           extensions: { code: "USER_NOT_LOGGED_IN" },
         });
       }
-      const userId = auth(contextValue?.token);
+      try {
+        const userId = auth(contextValue?.token);
 
-      const post = new PostMessage({
-        title: args.title,
-        message: args.message,
-        name: args.name,
-        creator: userId,
-        tags: args.tags,
-        selectedFile: args.selectedFile,
-        createdAt: new Date().toISOString(),
-      });
+        const post = new PostMessage({
+          title: args.title,
+          message: args.message,
+          name: args.name,
+          creator: userId,
+          tags: args.tags,
+          selectedFile: args.selectedFile,
+          createdAt: new Date().toISOString(),
+        });
 
-      return await post.save();
+        return await post.save();
+      } catch (error) {
+        console.log(error);
+        return error;
+      }
     },
     async updatePost(_, args) {
-      return await PostMessage.findByIdAndUpdate(
-        args.id,
-        {
-          $set: {
-            title: args.title,
-            message: args.message,
-            name: args.name,
-            tags: args.tags,
-            selectedFile: args.selectedFile,
+      try {
+        return await PostMessage.findByIdAndUpdate(
+          args.id,
+          {
+            $set: {
+              title: args.title,
+              message: args.message,
+              name: args.name,
+              tags: args.tags,
+              selectedFile: args.selectedFile,
+            },
           },
-        },
-        { new: true }
-      );
+          { new: true }
+        );
+      } catch (error) {
+        console.log(error);
+        return error;
+      }
     },
     async deletePost(_, args, contextValue) {
       if (
@@ -175,7 +215,12 @@ export const resolvers = {
           extensions: { code: "USER_NOT_LOGGED_IN" },
         });
       }
-      return await PostMessage.findByIdAndDelete(args.id);
+      try {
+        return await PostMessage.findByIdAndDelete(args.id);
+      } catch (error) {
+        console.log(error);
+        return error;
+      }
     },
     async likePost(_, args, contextValue) {
       if (!contextValue.token || contextValue.token === "null") {
@@ -189,16 +234,23 @@ export const resolvers = {
           extensions: { code: "USER_NOT_LOGGED_IN" },
         });
       }
-      const post = await PostMessage.findById(args.id);
+      try {
+        const post = await PostMessage.findById(args.id);
 
-      const index = post.likes.findIndex((id) => id === String(userId));
+        const index = post.likes.findIndex((id) => id === String(userId));
 
-      if (index === -1) {
-        post.likes.push(userId);
-      } else {
-        post.likes = post.likes.filter((id) => id !== String(userId));
+        if (index === -1) {
+          post.likes.push(userId);
+        } else {
+          post.likes = post.likes.filter((id) => id !== String(userId));
+        }
+        return await PostMessage.findByIdAndUpdate(args.id, post, {
+          new: true,
+        });
+      } catch (error) {
+        console.log(error);
+        return error;
       }
-      return await PostMessage.findByIdAndUpdate(args.id, post, { new: true });
     },
 
     async commentPost(_, args, contextValue) {
@@ -213,106 +265,120 @@ export const resolvers = {
           extensions: { code: "USER_NOT_LOGGED_IN" },
         });
       }
+      try {
+        const post = await PostMessage.findById(args.id);
 
-      const post = await PostMessage.findById(args.id);
+        post.comments.push(args.value);
 
-      post.comments.push(args.value);
+        const updatedPost = await PostMessage.findByIdAndUpdate(args.id, post, {
+          new: true,
+        });
 
-      const updatedPost = await PostMessage.findByIdAndUpdate(args.id, post, {
-        new: true,
-      });
-
-      return updatedPost;
+        return updatedPost;
+      } catch (error) {
+        console.log(error);
+        return error;
+      }
     },
 
     async signUpGoogle(_, args) {
-      const userExist = await User.findOne({
-        email: args.email.toLowerCase(),
-      });
-
-      if (!userExist) {
-        const newUser = await User.create({
-          name: args.name,
+      try {
+        const userExist = await User.findOne({
           email: args.email.toLowerCase(),
-          pfp: args.pfp,
         });
 
-        const token = jwt.sign(
-          {
-            email: newUser.email,
-            id: newUser._id,
-            name: newUser.name,
-            pfp: newUser.pfp,
-          },
-          "test",
-          {
-            expiresIn: "1h",
-          }
-        );
-        return { user: newUser, token: token };
-      } else if (userExist.hasOwnProperty("password")) {
-        throw new GraphQLError(
-          "User already exists, Please use your Login Credentials",
-          {
-            extensions: { code: "USER_ALREADY_EXISTS" },
-          }
-        );
-      } else {
-        const token = jwt.sign(
-          {
-            email: userExist.email,
-            id: userExist._id,
-            name: userExist.name,
-            pfp: userExist.pfp,
-          },
-          "test",
-          {
-            expiresIn: "1h",
-          }
-        );
+        if (!userExist) {
+          const newUser = await User.create({
+            name: args.name,
+            email: args.email.toLowerCase(),
+            pfp: args.pfp,
+          });
 
-        return { user: userExist, token: token };
+          const token = jwt.sign(
+            {
+              email: newUser.email,
+              id: newUser._id,
+              name: newUser.name,
+              pfp: newUser.pfp,
+            },
+            "test",
+            {
+              expiresIn: "1h",
+            }
+          );
+          return { user: newUser, token: token };
+        } else if (userExist.hasOwnProperty("password")) {
+          throw new GraphQLError(
+            "User already exists, Please use your Login Credentials",
+            {
+              extensions: { code: "USER_ALREADY_EXISTS" },
+            }
+          );
+        } else {
+          const token = jwt.sign(
+            {
+              email: userExist.email,
+              id: userExist._id,
+              name: userExist.name,
+              pfp: userExist.pfp,
+            },
+            "test",
+            {
+              expiresIn: "1h",
+            }
+          );
+
+          return { user: userExist, token: token };
+        }
+      } catch (error) {
+        console.log(error);
+        return error;
       }
     },
     async signUp(_, args) {
-      const userExist = await User.findOne({
-        email: args.email.toLowerCase(),
-      });
-
-      if (userExist) {
-        throw new GraphQLError("User already exists", {
-          extensions: { code: "USER_ALREADY_EXISTS" },
+      try {
+        const userExist = await User.findOne({
+          email: args.email.toLowerCase(),
         });
-      }
 
-      if (args.password !== args.confirmPassword) {
-        throw new GraphQLError("Passwords do not match", {
-          extensions: { code: "PASSWORDS_DO_NOT_MATCH" },
-        });
-      }
-
-      const hashPassword = await bcrypt.hash(args.password, 12);
-
-      const result = await User.create({
-        name: `${args.firstName} ${args.lastName}`,
-        email: args.email.toLowerCase(),
-        password: hashPassword,
-      });
-
-      const token = jwt.sign(
-        {
-          email: result.email,
-          id: result._id,
-          name: result.name,
-          pfp: result.pfp,
-        },
-        "test",
-        {
-          expiresIn: "1h",
+        if (userExist) {
+          throw new GraphQLError("User already exists", {
+            extensions: { code: "USER_ALREADY_EXISTS" },
+          });
         }
-      );
 
-      return { user: result, token: token };
+        if (args.password !== args.confirmPassword) {
+          throw new GraphQLError("Passwords do not match", {
+            extensions: { code: "PASSWORDS_DO_NOT_MATCH" },
+          });
+        }
+
+        const hashPassword = await bcrypt.hash(args.password, 12);
+
+        const result = await User.create({
+          name: `${args.firstName} ${args.lastName}`,
+          email: args.email.toLowerCase(),
+          password: hashPassword,
+        });
+
+        const token = jwt.sign(
+          {
+            email: result.email,
+            id: result._id,
+            name: result.name,
+            pfp: result.pfp,
+          },
+          "test",
+          {
+            expiresIn: "1h",
+          }
+        );
+
+        return { user: result, token: token };
+      } catch (error) {
+        console.log(error);
+        return error;
+      }
     },
   },
 };

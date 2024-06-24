@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
 const auth = (token) => {
+  dotenv.config();
   try {
     const isCustomAuth = token.length < 500;
 
@@ -8,7 +10,7 @@ const auth = (token) => {
     let userId;
 
     if (token && isCustomAuth) {
-      decodedData = jwt.verify(token, "test"); // Make sure to make the secret value more secure.
+      decodedData = jwt.verify(token, process.env.JWT_SECRET); // Make sure to make the secret value more secure.
       // also need to change the secret in the frontend
       userId = decodedData?.id;
     } else {

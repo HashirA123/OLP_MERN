@@ -177,6 +177,7 @@ export default function Auth() {
                   googleFailure();
                 }}
                 useOneTap={false}
+                text="continue_with"
               />
             </Grid>
           </Grid>
